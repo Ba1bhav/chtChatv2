@@ -1,0 +1,35 @@
+.logIn{
+  width: 200px;
+}
+.form-center{
+  display: flex;
+  justify-content: center;
+}
+.field{
+  text-align: center;
+}
+.border{
+min-width:400px;
+min-height: 500px;
+height: auto;
+width: auto;
+}
+.file{
+  border: solid;
+  border-width: thin;
+  border-color: darkgrey;
+  border-radius: 2px;
+}
+
+.title{
+  font-weight: bold;
+  font-size: 40px;
+}
+.Matched{
+  border-color: green;
+
+}
+.notMatched{
+  border-color: red;
+
+}

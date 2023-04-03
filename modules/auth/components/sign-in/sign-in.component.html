@@ -1,0 +1,41 @@
+
+<div class='form-center'>
+  <form class="form" [formGroup]="loginForm" (ngSubmit)="logIn()">
+    <div form-control-row form-center class="border">
+      <br>
+      <div class="form-control-col form-center title">Log In</div>
+      <br>
+      <div class="form-control-col form-center">
+        <span *ngIf="loginForm.invalid&&errorToggle" class="field"
+          style="color: red;">Fields Are Invalid</span>
+      </div>
+      <br>
+      <div class="form-control-col form-center">
+        <input type="text" disabled placeholder="phone" style="width:100px; text-align: center;">
+        <input type="phone"  placeholder="+91xxxxxxxxxx" class="field" formControlName="phone" (input)="numberCheck($event.target)">
+      </div>
+      <div class="form-control-col form-center">
+        <span *ngIf="_loginControls['phone'].invalid && _loginControls['phone'].touched" class="field"
+          style="color: red;">Enter Valid Phone Number !</span>
+      </div>
+      <br>
+      <div class="form-control-col form-center">
+        <button *ngIf="_loginControls['phone'].invalid " type="button" style="width:100px; text-align: center; color: grey;background-color:transparent;border-width: thin;" (click)="errorToggler()" >Send OTP</button>
+        <button *ngIf="!_loginControls['phone'].invalid" type="button" style="width:100px; text-align: center; color: grey;background-color:transparent;border-width: thin;" (click)="sendOtp()" >Send OTP</button>
+        <input type="OTP" placeholder="Enter Your OTP" class="field" formControlName="otp">
+      </div>
+      <div class="form-control-col form-center">
+        <span *ngIf="_loginControls['otp'].invalid && _loginControls['otp'].touched" class="field"
+          style="color: red;"> Invalid  OTP !</span>
+      </div>
+      <br>
+      <div id="recaptcha-container" class="justify-center flex" style="text-align: -webkit-center;"></div>
+      <br>
+      <div class="form-control-col form-center">
+        <button *ngIf="!loginForm.invalid" class='btn btn-success logIn' type='submit'>Log In</button>
+        <button *ngIf="loginForm.invalid" class='btn btn-success logIn' type='button' (click)="errorToggler()">Log In</button>
+      </div>
+      </div>
+  </form>
+</div>
+
