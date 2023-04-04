@@ -1,4 +1,4 @@
-
+{{otpInputToggle}}
 <div class='form-center'>
   <form class="form" [formGroup]="loginForm" (ngSubmit)="logIn()">
     <div form-control-row form-center class="border">
@@ -19,21 +19,21 @@
           style="color: red;">Enter Valid Phone Number !</span>
       </div>
       <br>
-      <div class="form-control-col form-center">
-        <button *ngIf="_loginControls['phone'].invalid " type="button" style="width:100px; text-align: center; color: grey;background-color:transparent;border-width: thin;" (click)="errorToggler()" >Send OTP</button>
-        <button *ngIf="!_loginControls['phone'].invalid" type="button" style="width:100px; text-align: center; color: grey;background-color:transparent;border-width: thin;" (click)="sendOtp()" >Send OTP</button>
-        <input type="OTP" placeholder="Enter Your OTP" class="field" formControlName="otp">
-      </div>
-      <div class="form-control-col form-center">
-        <span *ngIf="_loginControls['otp'].invalid && _loginControls['otp'].touched" class="field"
-          style="color: red;"> Invalid  OTP !</span>
+      <div *ngIf="otpInputToggle" class="form-control-col form-center">
+        <input *ngIf="otpInputToggle" type="text"  disabled placeholder="OTP" style="width:100px; text-align: center;">
+        <div style="height:30px;width: 260px; text-align: center;">
+          <ng-otp-input *ngIf="otpInputToggle" (onInputChange)="onOtpInput($event)" [config]='otpInputConfig' ></ng-otp-input>
+        </div>
       </div>
       <br>
-      <div id="recaptcha-container" class="justify-center flex" style="text-align: -webkit-center;"></div>
+      <!-- Captcha Render -->
+      <div  id="recaptcha-container" class="justify-center flex" style="text-align: -webkit-center;text-align:-moz-center;"></div>
       <br>
       <div class="form-control-col form-center">
-        <button *ngIf="!loginForm.invalid" class='btn btn-success logIn' type='submit'>Log In</button>
-        <button *ngIf="loginForm.invalid" class='btn btn-success logIn' type='button' (click)="errorToggler()">Log In</button>
+        <button *ngIf="!loginForm.invalid&&otpInputToggle&&otp.length===otpInputConfig?.length" class='btn btn-success logIn' type='submit'>Log In</button>
+        <button *ngIf="!loginForm.invalid &&otpInputToggle&&otp.length!==otpInputConfig?.length" type="button" class='btn btn-success logIn' (click)="errorToggler()" >Log In</button>
+        <button *ngIf="_loginControls['phone'].invalid&&!otpInputToggle" type="button" class='btn btn-success logIn' (click)="errorToggler()" >Send OTP</button>
+        <button *ngIf="!_loginControls['phone'].invalid&&!otpInputToggle" type="button" class='btn btn-success logIn' (click)="sendOtp()" >Send OTP</button>
       </div>
       </div>
   </form>
