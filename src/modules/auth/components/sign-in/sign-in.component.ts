@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { initializeApp } from 'firebase/app';
 import { getAuth, RecaptchaVerifier,signInWithPhoneNumber } from "firebase/auth";
-import { FirebaseService } from 'services/shared/firebase.service';
-import { WindowService } from 'services/shared/window.service';
+import { FirebaseService } from 'src/services/shared/firebase.service';
+import { WindowService } from 'src/services/shared/window.service';
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
