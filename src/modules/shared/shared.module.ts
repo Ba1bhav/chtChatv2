@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-
-
-
+import { ChatRoomInfoComponent } from './components/chat-room-info/chat-room-info.component';
+import { ChatComponent } from './components/chat/chat.component';
+import { SearchUserComponent } from './components/search-user/search-user.component';
 @NgModule({
   declarations: [
-    DashboardComponent
+    ChatRoomInfoComponent,
+    ChatComponent,
+    SearchUserComponent,
   ],
   imports: [
     CommonModule

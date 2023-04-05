@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { getAuth, RecaptchaVerifier,signInWithPhoneNumber } from "firebase/auth";
+import { getAuth, RecaptchaVerifier,signInWithPhoneNumber} from "firebase/auth";
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { WindowService } from 'src/services/shared/window.service';
 @Component({
@@ -96,8 +96,8 @@ export class SignInComponent implements OnInit{
       { code='123456'
         this.windowRef.confirmationResult.confirm(code).then((result:any) => {
         const user = result.user;
-        localStorage.setItem('Response',JSON.stringify(result))
-        localStorage.setItem('user',JSON.stringify(user))
+        localStorage.setItem('uid',result?.user?.uid)
+        localStorage.setItem('idToken',result?._tokenResponse?.idToken)
         console.log(result)
       }).catch((error:any) => {
         console.log(error)

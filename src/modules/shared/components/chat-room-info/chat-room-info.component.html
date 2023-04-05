@@ -1,0 +1,26 @@
+
+<div  class="msger-chat" style="height:100%;width: 100%;" >
+
+  <div class='form-center'>
+      <div form-control-row form-center class="border">
+        <br>
+        <div class="chat-nav" style="text-align: center;">
+          <img class="msg-img" style="height: 100px; " src="../../../../assets/images/anonymous-avatar-icon-19.webp" (click)="updateProfilePic()">
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="form-control-col form-center" >
+          <input type="text" disabled placeholder="Name" style="width:100px; text-align: center;">
+          <input type="text" disabled [value]="userData?.name" class="field" >
+        </div>
+        <br>
+        <div class="form-control-col form-center" >
+          <input type="text" disabled placeholder="Mobile No." style="width:100px; text-align: center;">
+          <input type="text" disabled [value]="userData?.phone_number" class="field" >
+        </div>
+
+        <br>
+  </div>
+</div>
+

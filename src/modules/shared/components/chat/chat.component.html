@@ -1,0 +1,67 @@
+<section class="msger" style="height:700px;width: auto;" >
+  <header class="msger-header">
+    <div class="msger-header-title">
+       <div class="chat-nav">
+        <img class="msg-img" alt="image">
+      </div>
+    </div>
+    <!-- <div  style="align-self: center;color:black;font-size:30px;">chat room name</div> -->
+    <div  style="align-self: center;color:black;font-size:30px;">Start Chatting</div>
+    <div class="msger-header-options">
+      </div>
+  </header>
+<ng-container >
+  <ng-container >
+    <main  class="msger-chat"  id='chats' #test [scrollTop]="test.scrollHeight" >
+      <ng-container>
+          <div >
+            <div class="msg-bubble">
+              <div class="msg-info">
+                <div class="msg-info-time">date</div>
+              </div>
+
+              <div  class="msg-text">
+               message
+              </div>
+              <div  class="msg-text">
+                <img style="width: 200px;height: 200px;" src=''>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+    </main>
+    <ng-container ><div style="background-color: white;">
+  <table class="table table-stripped">
+    <thead>
+      <th>File Name</th>
+      <th>File</th>
+      <th>Action</th>
+    </thead>
+    <tr>
+      <td>filename</td>
+      <td ><img style="max-width: 200px;max-height: 200px;" alt="image"></td>
+      <td >file type</td>
+      <td type="button" style="color: red;">X</td>
+    </tr>
+  </table>
+    </div >
+    </ng-container>
+
+    <ng-container >
+    <form class="msger-inputarea"   >
+
+      <input type="file" style="display: none; color: transparent;" #fileUpload  matTooltip="Info about the action"
+      matTooltipPosition="top">
+      <button type="button" style="background-color: rgb(0, 196, 65);" >
+  attach
+      </button>
+      <input type="text" class="msger-input" placeholder="Enter your message..." formControlName="message">
+      <button type="submit" class="msger-send-btn">Send</button>
+    </form>
+    </ng-container>
+  </ng-container>
+</ng-container>
+</section>
+
+
+
