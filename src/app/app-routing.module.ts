@@ -4,8 +4,8 @@ import { SignInComponent } from 'src/modules/auth/components/sign-in/sign-in.com
 import { SearchUserComponent } from 'src/modules/shared/components/search-user/search-user.component';
 
 const routes: Routes = [
-  {path:'login',component:SignInComponent},
-  {path:'',component:SearchUserComponent}
+  {path:'',component:SignInComponent},
+  {path:'dashboard',component:SearchUserComponent}
 
 ];
 

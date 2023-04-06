@@ -35,6 +35,13 @@
         <button *ngIf="_loginControls['phone'].invalid&&!otpInputToggle" type="button" class='btn btn-success logIn' (click)="errorToggler()" >Send OTP</button>
         <button *ngIf="!_loginControls['phone'].invalid&&!otpInputToggle" type="button" class='btn btn-success logIn' (click)="sendOtp()" >Send OTP</button>
       </div>
+      <br>
+      <div style="text-align: center;">Or</div>
+      <br>
+      <div class="form-control-col form-center">
+        <button *ngIf="isMetaMaskPresent" class='btn  metaMasklogIn' type='button' (click)="loginMetamask()" >MetaMask Login</button>
+        <button *ngIf="!isMetaMaskPresent" type="button" class='btn  metaMasklogIn' (click)="createMetamask()" >MetaMask Login</button>
+      </div>
       </div>
   </form>
 </div>

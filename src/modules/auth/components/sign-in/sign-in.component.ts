@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getAuth, RecaptchaVerifier,signInWithPhoneNumber} from "firebase/auth";
 import { FirebaseService } from 'src/services/shared/firebase.service';
+import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import { WindowService } from 'src/services/shared/window.service';
 @Component({
   selector: 'app-sign-in',
@@ -25,15 +26,22 @@ export class SignInComponent implements OnInit{
   allowNumbersOnly:true,
 }
 
-  constructor(private window:WindowService,private firbaseService:FirebaseService){
+//metamask
+isMetaMaskPresent:boolean=false;
+etherium:any;
+//metamask
+
+  constructor(private requests:HttpRequestsService,private window:WindowService,private firbaseService:FirebaseService){
     this.windowRef=window.windowRef;
+    this.etherium=this.windowRef.ethereum
+    this.isMetaMaskPresent=this.etherium?this.etherium.isMetaMask:false;
     this.loginForm=new FormGroup({
       phone:new FormControl('',[Validators.required,Validators.minLength(10),Validators.maxLength(10),Validators.pattern('[0-9]{10}')]),
     })
   }
   auth = getAuth(this.firbaseService.app()||undefined);
   ngOnInit(){
-
+    try{
     this.windowRef.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
       'size':'normal',
       'callback': (response:any) => {
@@ -47,7 +55,11 @@ export class SignInComponent implements OnInit{
     }, this.auth);
 
     this.windowRef.recaptchaVerifier.render()
+  }
+  catch(someError:any){
+    console.log('Some Error Encountered !');
 
+  }
   }
 
    logIn(){
@@ -107,4 +119,58 @@ export class SignInComponent implements OnInit{
   onOtpInput(event:any){
     this.otp=event
   }
+
+  // MetaMask code Begins
+
+  loginMetamask(){
+    if (this.etherium) {
+      console.log('Ethereum successfully detected!')
+      if(this.etherium.isConnected()){
+          this.etherium.request({method:'eth_accounts'})
+          .then((accounts:any)=>{
+            if(accounts.length==0){
+              console.log('Please Connect to Metamask !');
+              console.log('Connecting to Metamask !')
+              this.etherium.request({method:'eth_requestAccounts'})
+              .then((accounts:any)=>{
+                console.log(accounts)
+                localStorage.setItem('uid',accounts[0])
+                this.requests.getUser(true).subscribe(
+                  ()=>console.log('redirect'),
+                  ()=>{this.requests.registerUser(true).subscribe((response:any)=>console.log('mask',response))})
+              })
+              .catch((error:any)=>{
+                if(error.code===4001){
+                  console.log('Please Connect to Metamask !');
+                }
+                else{
+                  console.log(error);
+                }
+
+              })
+            }
+            else{
+              localStorage.setItem('uid',accounts[0])
+              console.log('success');
+            }
+          })
+          .catch((error:any)=>console.log(error))
+      }
+      else{
+
+        //sweet Alert Here
+        console.log('Try Reloading Your Window !');
+
+      }
+    }
+    else {
+    console.error('Please install MetaMask!')
+    window.open('https://metamask.io/download/')
+  }
+  }
+  createMetamask() {
+
+    console.log('Create Meta Mask Account')
+    window.open('https://metamask.io/download/')
+    }
 }
