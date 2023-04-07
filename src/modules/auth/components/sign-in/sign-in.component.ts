@@ -60,6 +60,9 @@ etherium:any;
     console.log('Some Error Encountered !');
 
   }
+  // this.requests.getUser(true).subscribe(
+  //   (response:any)=>console.log('redirect',response),
+  //   ()=>{this.requests.registerUser(true).subscribe((response:any)=>console.log('mask',response))})
   }
 
    logIn(){
@@ -136,7 +139,7 @@ etherium:any;
                 console.log(accounts)
                 localStorage.setItem('uid',accounts[0])
                 this.requests.getUser(true).subscribe(
-                  ()=>console.log('redirect'),
+                  (response:any)=>console.log('redirect',response),
                   ()=>{this.requests.registerUser(true).subscribe((response:any)=>console.log('mask',response))})
               })
               .catch((error:any)=>{

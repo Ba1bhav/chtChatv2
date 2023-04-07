@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChatRoomInfoComponent } from './components/chat-room-info/chat-room-info.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { SearchUserComponent } from './components/search-user/search-user.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     ChatRoomInfoComponent,
@@ -10,7 +11,9 @@ import { SearchUserComponent } from './components/search-user/search-user.compon
     SearchUserComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class SharedModule { }

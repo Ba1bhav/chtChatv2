@@ -1,27 +1,34 @@
-{{response|json}}
-<div  class="msger-chat" style="height:100%;width: 100%;" >
-
+<div  class="msger-chat" style="display: block;height:100%;width: 100%;" >
+  <form *ngIf="profileForm" [formGroup]="profileForm" (submit)="profileUpdates()">
   <div class='form-center'>
       <div form-control-row form-center class="border">
         <br>
         <div class="chat-nav" style="text-align: center;">
-          <img class="msg-img" style="height: 100px; " [src]="image+localStorage.getItem('uid')+'?alt=media&token='+userData?.profile" (click)="updateProfilePic()">
-          <input type="file" (change)="getFile($event)">
+          <img class="msg-img" style="height: 100px; border-radius: 70%;width: 100px;" [src]="userData.id" (error)="errorImageHandler($event)" (click)="profileUpdate.click()" >
+          <input type="file" style="display: none;" #profileUpdate (change)="[getFile($event),profileForm.enable()]">
         </div>
-        <br>
         <br>
         <br>
         <div class="form-control-col form-center" >
           <input type="text" disabled placeholder="Name" style="width:100px; text-align: center;">
-          <input type="text" disabled [value]="userData?.name" class="field" >
+          <input type="text" formControlName="name" class="field" >
         </div>
         <br>
         <div class="form-control-col form-center" >
-          <input type="text" disabled placeholder="Mobile No." style="width:100px; text-align: center;">
-          <input type="text" disabled [value]="userData?.phone_number" class="field" >
+          <input type="text" disabled placeholder="ID" style="width:100px; text-align: center;">
+          <input type="text"  formControlName="id" class="field" >
         </div>
-
+        <br>
+        <div style="text-align: center;" >
+          <div style="padding: 10%;">
+          <button *ngIf="profileForm.enabled" class="btn btn-secondary" style="float: left;" type="submit">Update</button>
+          <button *ngIf="profileForm.enabled" class="btn btn-info" style="float: right;" type="button" (click)="[profileForm.disable(),setProfileForm()]">Reset</button>
+        </div>
+          <button *ngIf="profileForm.disabled" class="btn btn-secondary" (click)="profileForm.enable()" type="button">Edit Profile</button>
+        </div>
         <br>
   </div>
+  </div>
+</form>
 </div>
 

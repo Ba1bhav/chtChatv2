@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import {urls} from '../../commons/constants'
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,16 @@ export class HttpRequestsService {
     const uid=localStorage.getItem('uid')
     const token=localStorage.getItem("idToken")
     return this.request.get(urls.realtimeDb+(anonymous?urls.metaMaskUrl:urls.phoneUrl)+uid+'.json'+(anonymous?'':'?auth='+token))
+  }
+  getDownloadLink(fileName:any){
+    const uri=`${urls.storage}${fileName}?id=true`.replace('+','%2B')
+    return this.request.get(uri)
+  }
+  postUpdates(fireBaseId:any,isAnonymous:any,data:any){
+    const uid=localStorage.getItem('uid')
+    const token=localStorage.getItem("idToken")
+    return this.request.put(urls.realtimeDb+(isAnonymous?urls.metaMaskUrl:urls.phoneUrl)+uid+'/'+fireBaseId+'.json'+(isAnonymous?'':'?auth='+token),data)
+
   }
 
 }

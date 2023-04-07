@@ -1,34 +1,55 @@
 import { Component } from '@angular/core';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
-import{getStorage,uploadBytes,ref,getDownloadURL, uploadBytesResumable} from'firebase/storage'
+import{getStorage,ref, uploadBytesResumable} from'firebase/storage'
+import {FormControl,FormGroup,Validators } from '@angular/forms';
+import { urls } from 'src/commons/constants';
+
 @Component({
   selector: 'app-chat-room-info',
   templateUrl: './chat-room-info.component.html',
   styleUrls: ['./chat-room-info.component.scss']
 })
-export class ChatRoomInfoComponent {
-  image='https://firebasestorage.googleapis.com/v0/b/chitchatv2-f816e.appspot.com/o/'//uid?alt=media&token=userdata.profile'
-userData:any;
-localStorage=localStorage;
-constructor(private firebase:FirebaseService,private requests:HttpRequestsService){
-  requests.getUser(false).subscribe((response:any)=>{
-    this.userData=Object.values(response)[0]
-    // console.log(Object.values(response)[0])
+export class ChatRoomInfoComponent{
+file:any;
+userData:any={};
+userDataKey:any;
+urls=urls
+isAnonymous:boolean=localStorage.getItem('uid')?.startsWith('0x')?true:false;
+profileForm!:FormGroup ;
+constructor(private firebase:FirebaseService,private httpRequests:HttpRequestsService){
+  httpRequests.getUser(this.isAnonymous).subscribe((response:any)=>{
+    this.userDataKey=Object.keys(response)
+    this.userData=Object.values(response)[0];
+    this.userData.id=parseInt(this.userData.uid,16).toString()
+    this.setProfileForm()
+    this.profileForm.disable()
+
+  })
+
+
+}
+
+
+setProfileForm(){
+  this.profileForm=new FormGroup({
+    uid:new FormControl(this.userData.uid,[Validators.required]),
+    id:new FormControl(this.userData?.id??'Anonymous',[Validators.required]),
+    name:new FormControl(this.userData?.name??'Anonymous',[Validators.required]),
+    profile:new FormControl(this.userData.profile),
+
   })
 }
-file:any;
 getFile(event:any){
 this.file=event.srcElement.files[0]
 }
-response:any;
 updateProfilePic(){
   const app=this.firebase.app()
   const storage=getStorage(app)
-  const data=localStorage.getItem('uid');
-  const imageref=ref(storage,'/'+data||'')
+  const data=localStorage.getItem('uid')||'';
+  const imageref=ref(storage,'/'+this.userData.uid||'')
   const metadata = {
-    contentType: 'image/jpeg'
+    contentType: 'image/jpeg',
   };
 
   const uploadTask = uploadBytesResumable(imageref, this.file, metadata);
@@ -48,8 +69,6 @@ updateProfilePic(){
     }
   },
   (error) => {
-    // A full list of error codes is available at
-    // https://firebase.google.com/docs/storage/web/handle-errors
     switch (error.code) {
       case 'storage/unauthorized':
         // User doesn't have permission to access the object
@@ -66,11 +85,21 @@ updateProfilePic(){
     }
   },
   () => {
-    // Upload completed successfully, now we can get the download URL
-    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-      this.requests.putProfilePic({profile:downloadURL}).subscribe((res:any)=>console.log(res))
-      console.log('File available at', downloadURL);
-    });
+    this.httpRequests.getDownloadLink(this.userData.uid).subscribe((response:any)=>{
+      const downloadUrl=urls.storage+String(this.userData.uid).replace('+','%2B')+'?alt=media&token='+response?.downloadTokens;
+      this.httpRequests.postUpdates(this.userDataKey[0],this.isAnonymous,{'profile':downloadUrl}).subscribe((updateResponse:any)=>{
+        console.log('profile token activated successfully')
+      })
+    })
   })
 }
+profileUpdates(){
+  console.log('pushing updates')
+  console.log('profile details',this.profileForm)
+  this.profileForm.disable()
+}
+errorImageHandler(imageEvent:any) {
+  imageEvent.target.src=urls.defaultProfile;
+  }
+
 }
