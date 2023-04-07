@@ -1,4 +1,8 @@
-<div  class="msger-chat" style="display: block;height:100%;width: 100%;" >
+<div>
+  <h1>ChitChat-v2</h1>
+  <h3>Welcome {{userData?.name||'Anonymous'}}</h3>
+</div>
+<div  style="display: block;height:100%;width: 100%;" >
   <form *ngIf="profileForm" [formGroup]="profileForm" (submit)="profileUpdates()">
   <div class='form-center'>
       <div form-control-row form-center class="border">
@@ -31,4 +35,7 @@
   </div>
 </form>
 </div>
-
+<div style="height: 100%;">
+  <h5>Tips</h5>
+  <div></div>
+</div>

@@ -1,6 +1,6 @@
-<table class="dashboard">
-  <tr>
-    <td style="width:40%">
+<table class="dashboard" style="width: 100%;height: 100%;">
+  <tr style="width: 100%;">
+    <!-- <td style="width:40%">
       <table style="width:100%;height:700px;background-color: aliceblue;">
         <thead style="height: 45px;display: block;width: 100%;">
           <tr style="height: 20px;background-color:#eee;">
@@ -26,13 +26,51 @@
             <td style="text-align: right;">
               <button (click)="logOut()">logout</button>
             </td>
+             </tr>
+            </td>
           </tr>
-    </td>
-  </tr>
         </thead>
         </table>
-  </td>
-  <td><app-chat-room-info style="display: block;"></app-chat-room-info></td>
+         </td> -->
+    <td style="width: 30%; background-color: blanchedalmond;">
+      <table style="width: 100%;">
+        <thead>
+        <tr>
+          <td>
+            <tr>
+              <td>
+                <tr>
+                  <td>Image</td>
+                  <td>User Name</td>
+                  <td>Options</td>
+                </tr>
+              </td>
+            <tr>
+              <tr>
+                <tr>
+                  <td>
+                    <tr>
+                      <td>Chats</td>
+                      <td>Groups</td>
+                      <td>Notification</td>
+                    </tr>
+                  </td>
+                <tr>
+              <tr>
+                <tr>
+                <td><span>search_Icon</span><input type="text" ></td>
+                <tr>
+          </td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td></td>
+        </tr>
+      </tbody>
+      </table>
+    </td>
+  <td style="width: 70%;background-image: url({{urls.chatsBackground}});"><app-chat-room-info style="display: block;"></app-chat-room-info></td>
   </tr>
 
 </table>
