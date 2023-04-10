@@ -1,67 +1,94 @@
-<section class="msger" style="height:700px;width: auto;" >
-  <header class="msger-header">
-    <div class="msger-header-title">
-       <div class="chat-nav">
-        <img class="msg-img" alt="image">
+<table style="width: 100%;height: 100%;">
+  <thead style="width: 100%;background-color: rgb(243,243,243);">
+    <header class="msger-header">
+      <div class="msger-header-title" style="align-self: center;">
+         <div class="chat-nav">
+          <img class="msg-img" style="height: 50px; border-radius: 70%;width: 50px;" [src]="userData?.id" (error)="errorImageHandler($event)" >
+        </div>
       </div>
-    </div>
-    <!-- <div  style="align-self: center;color:black;font-size:30px;">chat room name</div> -->
-    <div  style="align-self: center;color:black;font-size:30px;">Start Chatting</div>
-    <div class="msger-header-options">
-      </div>
-  </header>
-<ng-container >
-  <ng-container >
-    <main  class="msger-chat"  id='chats' #test [scrollTop]="test.scrollHeight" >
-      <ng-container>
-          <div >
-            <div class="msg-bubble">
-              <div class="msg-info">
-                <div class="msg-info-time">date</div>
-              </div>
+      <!-- <div  style="align-self: center;color:black;font-size:30px;">chat room name</div> -->
+      <div  style="align-self: center;color:black;font-size:30px;">Start Chatting</div>
+      <div class="msger-header-options">
 
-              <div  class="msg-text">
-               message
+          <button style="background-color: transparent;border: none; padding: 15px;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>
+            <mat-icon>info</mat-icon>
+            <span>info</span>
+          </button>
+          <button mat-menu-item disabled>
+            <mat-icon>notifications_off</mat-icon>
+            <span>Disable</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>exit_to_app</mat-icon>
+            <span>leave chat</span>
+          </button>
+        </mat-menu>
+      </div>
+    </header>
+
+  </thead>
+  <tbody style="height: 75%;">
+    <section class="msger" style="display: contents;overflow: hidden;width: 100%;" >
+       <ng-container >
+      <ng-container >
+        <main  class="msger-chat" style="height: 100%;" id='chats' #test [scrollTop]="test.scrollHeight" >
+          <ng-container>
+              <div >
+                <div class="msg-bubble">
+                  <div class="msg-info">
+                    <div class="msg-info-time">date</div>
+                  </div>
+
+                  <div  class="msg-text">
+                   message
+                  </div>
+                  <div  class="msg-text">
+                    <img style="width: 200px;height: 200px;" src=''>
+                  </div>
+                </div>
               </div>
-              <div  class="msg-text">
-                <img style="width: 200px;height: 200px;" src=''>
-              </div>
-            </div>
-          </div>
+            </ng-container>
+        </main>
         </ng-container>
-    </main>
-    <ng-container ><div style="background-color: white;">
-  <table class="table table-stripped">
-    <thead>
-      <th>File Name</th>
-      <th>File</th>
-      <th>Action</th>
-    </thead>
-    <tr>
-      <td>filename</td>
-      <td ><img style="max-width: 200px;max-height: 200px;" alt="image"></td>
-      <td >file type</td>
-      <td type="button" style="color: red;">X</td>
-    </tr>
-  </table>
-    </div >
     </ng-container>
-
-    <ng-container >
-    <form class="msger-inputarea"   >
-
-      <input type="file" style="display: none; color: transparent;" #fileUpload  matTooltip="Info about the action"
-      matTooltipPosition="top">
-      <button type="button" style="background-color: rgb(0, 196, 65);" >
-  attach
-      </button>
-      <input type="text" class="msger-input" placeholder="Enter your message..." formControlName="message">
-      <button type="submit" class="msger-send-btn">Send</button>
-    </form>
-    </ng-container>
-  </ng-container>
-</ng-container>
-</section>
+    </section>
+  </tbody>
+  <tfoot style="height: min-content;">
+    <ng-container *ngIf="false">
+      <div style="background-color: white;">
+      <table class="table table-stripped">
+        <thead>
+          <th>File Name</th>
+          <th>File</th>
+          <th>Action</th>
+        </thead>
+        <tr>
+          <td>filename</td>
+          <td ><img style="max-width: 200px;max-height: 200px;" alt="image"></td>
+          <td >file type</td>
+          <td type="button" style="color: red;">X</td>
+        </tr>
+      </table>
+        </div ></ng-container>
+        <ng-container >
+        <!-- <form class="msger-inputarea"   > -->
+          <div class="msger-inputarea" >
+          <input type="file" style="display: none;outline: none; color: transparent;border: none;" #fileUpload  matTooltip="Info about the action"
+          matTooltipPosition="top">
+          <button type="button" (click)="fileUpload.click()" style="padding:3px;background-color: rgb(0, 196, 65);margin-right: 10px;" >
+              <mat-icon style="color: white;padding: 5px;">attach_file</mat-icon>
+          </button>
+          <input type="text" class="msger-input" placeholder="Enter your message...">
+          <button type="submit" class="msger-send-btn">Send</button>
+        </div>
+        <!-- </form> -->
+        </ng-container>
+  </tfoot>
+</table>
 
 
 

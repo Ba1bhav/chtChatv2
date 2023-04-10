@@ -111,6 +111,8 @@ etherium:any;
       { code='123456'
         this.windowRef.confirmationResult.confirm(code).then((result:any) => {
         const user = result.user;
+        console.log(result);
+
         localStorage.setItem('uid',result?.user?.uid)
         localStorage.setItem('idToken',result?._tokenResponse?.idToken)
         console.log(result)

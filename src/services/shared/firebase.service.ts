@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { initializeApp } from 'firebase/app';
-
+import{getFirestore} from 'firebase/firestore';
 @Injectable({
   providedIn: 'root'
 })
@@ -19,4 +19,8 @@ export class FirebaseService {
 
    }
    app=()=>initializeApp(this.firebaseConfig);
+
+   getDb(){
+    return getFirestore(initializeApp(this.firebaseConfig))
+   }
 }

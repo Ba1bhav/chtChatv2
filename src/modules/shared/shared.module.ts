@@ -4,6 +4,8 @@ import { ChatRoomInfoComponent } from './components/chat-room-info/chat-room-inf
 import { ChatComponent } from './components/chat/chat.component';
 import { SearchUserComponent } from './components/search-user/search-user.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatIconModule} from '@angular/material/icon';
 @NgModule({
   declarations: [
     ChatRoomInfoComponent,
@@ -13,7 +15,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatMenuModule,
+    MatIconModule,
   ]
 })
 export class SharedModule { }

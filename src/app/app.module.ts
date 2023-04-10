@@ -4,7 +4,8 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from 'src/modules/shared/shared.module';
-import{HttpClientModule} from '@angular/common/http'
+import{HttpClientModule} from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 @NgModule({
   declarations: [
     AppComponent
@@ -14,7 +15,8 @@ import{HttpClientModule} from '@angular/common/http'
     AppRoutingModule,
     AuthModule,
     SharedModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

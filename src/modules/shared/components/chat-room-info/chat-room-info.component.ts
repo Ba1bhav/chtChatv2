@@ -4,7 +4,8 @@ import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import{getStorage,ref, uploadBytesResumable} from'firebase/storage'
 import {FormControl,FormGroup,Validators } from '@angular/forms';
 import { urls } from 'src/commons/constants';
-
+// {uid:,id:,phone_number,profile,name}
+//
 @Component({
   selector: 'app-chat-room-info',
   templateUrl: './chat-room-info.component.html',
@@ -21,7 +22,7 @@ constructor(private firebase:FirebaseService,private httpRequests:HttpRequestsSe
   httpRequests.getUser(this.isAnonymous).subscribe((response:any)=>{
     this.userDataKey=Object.keys(response)
     this.userData=Object.values(response)[0];
-    this.userData.id=parseInt(this.userData.uid,16).toString()
+    this.userData.id=this.isAnonymous?parseInt(this.userData.uid,16).toString():this.userData.id;
     this.setProfileForm()
     this.profileForm.disable()
 
@@ -33,15 +34,16 @@ constructor(private firebase:FirebaseService,private httpRequests:HttpRequestsSe
 
 setProfileForm(){
   this.profileForm=new FormGroup({
-    uid:new FormControl(this.userData.uid,[Validators.required]),
-    id:new FormControl(this.userData?.id??'Anonymous',[Validators.required]),
+    uid:new FormControl(this.userData.uid),
+    id:new FormControl(this.userData.id),
+    phone_number:new FormControl(this.userData.phone_number),
     name:new FormControl(this.userData?.name??'Anonymous',[Validators.required]),
     profile:new FormControl(this.userData.profile),
-
   })
 }
 getFile(event:any){
 this.file=event.srcElement.files[0]
+this.updateProfilePic()
 }
 updateProfilePic(){
   const app=this.firebase.app()
@@ -87,15 +89,16 @@ updateProfilePic(){
   () => {
     this.httpRequests.getDownloadLink(this.userData.uid).subscribe((response:any)=>{
       const downloadUrl=urls.storage+String(this.userData.uid).replace('+','%2B')+'?alt=media&token='+response?.downloadTokens;
-      this.httpRequests.postUpdates(this.userDataKey[0],this.isAnonymous,{'profile':downloadUrl}).subscribe((updateResponse:any)=>{
-        console.log('profile token activated successfully')
-      })
+      this.profileForm.value.profile=downloadUrl;
     })
   })
 }
 profileUpdates(){
   console.log('pushing updates')
-  console.log('profile details',this.profileForm)
+  console.log('profile details',this.profileForm.value,this.userData)
+  this.httpRequests.postUpdates(this.userDataKey,this.isAnonymous,this.profileForm.value).subscribe((response:any)=>{
+    console.log(response)
+  })
   this.profileForm.disable()
 }
 errorImageHandler(imageEvent:any) {

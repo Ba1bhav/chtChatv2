@@ -1,76 +1,62 @@
 <table class="dashboard" style="width: 100%;height: 100%;">
   <tr style="width: 100%;">
-    <!-- <td style="width:40%">
-      <table style="width:100%;height:700px;background-color: aliceblue;">
-        <thead style="height: 45px;display: block;width: 100%;">
-          <tr style="height: 20px;background-color:#eee;">
-            <td [style.color]="true?'green':'red'">●</td>
-            <td style="width: 100%;height: 50px;">
-            <tr >
-            <td style="width:120px">
-              <button class="btn"
-                style="width:100%;text-align: center;background-color: transparent;border-width: thin; border-color: grey;">
-                search user
+    <td style="width:30%;background-color: aliceblue;">
+      <table style="width:100%;height: 100%;">
+        <thead style="height: 15%;background-color:#eee;">
+          <div style="display: flex; flex-direction: row;justify-content: center;">
+            <img class="msg-img" style="height: 65px; border-radius: 70%;width: 65px;" [src]="userData?.id" (error)="errorImageHandler($event)" >
+            <div style="width: 60%;text-align: center;padding: 4%;">User Name</div>
+            <div style="float: right;text-align: center;padding: 4%;">
+              <button style="background-color: transparent;border: none;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>dialpad</mat-icon>
+                <span>Redial</span>
               </button>
-            </td>
-            <td style="width: 270;">
-              <input type="text" placeholder="search" class="form-control" style="width:100%" >
-            </td>
-            <td style="width:300px;text-align: -webkit-center;text-align: -moz-center;">
-              <tr style="text-align: -webkit-center;">
-              <td><img class="msg-img" alt="msg image"></td>
-              <td>User Name</td>
-
-            </tr>
-            </td>
-            <td style="text-align: right;">
-              <button (click)="logOut()">logout</button>
-            </td>
-             </tr>
-            </td>
-          </tr>
-        </thead>
-        </table>
-         </td> -->
-    <td style="width: 30%; background-color: blanchedalmond;">
-      <table style="width: 100%;">
-        <thead>
-        <tr>
-          <td>
-            <tr>
-              <td>
-                <tr>
-                  <td>Image</td>
-                  <td>User Name</td>
-                  <td>Options</td>
-                </tr>
-              </td>
-            <tr>
-              <tr>
-                <tr>
-                  <td>
-                    <tr>
-                      <td>Chats</td>
-                      <td>Groups</td>
-                      <td>Notification</td>
-                    </tr>
-                  </td>
-                <tr>
-              <tr>
-                <tr>
-                <td><span>search_Icon</span><input type="text" ></td>
-                <tr>
-          </td>
-        </tr>
+              <button mat-menu-item disabled>
+                <mat-icon>voicemail</mat-icon>
+                <span>Check voice mail</span>
+              </button>
+              <button mat-menu-item (click)="logOut()">
+                <mat-icon>power_settings_new</mat-icon>
+                <span>logout</span>
+              </button>
+            </mat-menu>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: row;justify-content: center;">
+          <div style="justify-content: center;width: 95%;padding: 1%;display: flex;background-color: white; flex-direction: row;border-radius: 50px;border: solid;border-width: thin;overflow: hidden;">
+            <input type="text" placeholder="search " style="width: 95%;border: none;padding-left: 4%;outline: none;">
+            <div><mat-icon style="background-color: white;height: 100%;outline: none;">search</mat-icon></div>
+          </div>
+        </div>
         </thead>
         <tbody>
-        <tr>
-          <td></td>
-        </tr>
-      </tbody>
-      </table>
+          <tr>
+            <td>
+              <div>
+                <div style="text-align: center;width: 100%;">Chats</div>
+                <ng-container *ngFor="let chat of chatsList">
+                  <div type="button" class="chatList-chatButton" >
+                    <div style="align-self: center;"><img class="msg-img" style="height: 50px; border-radius: 70%;width: 50px;" [src]="userData?.id" (error)="errorImageHandler($event)" >
+                    </div>
+                    <div style="align-self: center;margin-right: 5%;">{{chat?.roomName}}</div>
+                  </div>
+                </ng-container>
+              </div>
+
+            </td>
+          </tr>
+        </tbody>
+        </table>
+
     </td>
-  <td style="width: 70%;background-image: url({{urls.chatsBackground}});"><app-chat-room-info style="display: block;"></app-chat-room-info></td>
+    <td>
+      <app-chat></app-chat>
+    </td>
+    <!-- <td style="width: 70%;background-image: url({{urls.chatsBackground}});"><app-chat-room-info style="display: block;"></app-chat-room-info></td> -->
   </tr>
 
 </table>
