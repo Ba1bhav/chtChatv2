@@ -20,9 +20,12 @@ export class SearchUserComponent implements OnInit{
   searchInputDebounce:any;
   searchResult:any=[];
   userschatReff:any;
+  chatName:any='some name here'
+  chatId:any;
+  senderId=localStorage.getItem('uid')??'';
 constructor(private router:Router,private fireBaseService:FirebaseService){
   this.dataBase=fireBaseService.getDb();
-  this.dataBaseReffrence=doc(this.dataBase,'chats',localStorage.getItem('uid')||'pU3Q54x4yvX8pJa8yZnM5iMjN5D2');
+  this.dataBaseReffrence=doc(this.dataBase,'chats',this.senderId);
   this.chatsReff=collection(this.dataBase, "chats");
   this.usersChatlistsReff=collection(this.dataBase, 'usersChatlists',localStorage.getItem('uid')??'','chats');
 
@@ -42,65 +45,62 @@ logOut(){
   this.router.navigate(['/login'])
 }
 searchUser(inputEvent:any){
-console.log(inputEvent?.value);
-clearTimeout(this.searchInputDebounce)
-this.searchInputDebounce=setTimeout(()=>{
-  console.log('Searching ... ');
-  this.searchQuery(Array.from(inputEvent.value))
-},1000)
+    console.log(inputEvent?.value);
+    clearTimeout(this.searchInputDebounce)
+    this.searchInputDebounce=setTimeout(()=>{
+      console.log('Searching ... ');
+      this.searchQuery(Array.from(inputEvent.value))
+    },1000)
 }
 searchQuery(searchArray:any){
   console.log('response');
-if(searchArray.length>0){
-  const search=query(collection(this.dataBase, 'usersChatlists'), where('userName','array-contains-any',searchArray));
-  this.searchResult=[]
-  getDocs(search).then((response:any)=>response.forEach((doc:any) => {
-    this.searchResult.push({id:doc.id,name:String(doc.data().userName).replaceAll(',','')})
-    console.log(doc.id, ' => ', doc.data());
-}))
-}
-else{
-  this.searchResult=null;
-}
+  if(searchArray.length>0){
+    const search=query(collection(this.dataBase, 'usersChatlists'), where('userName','array-contains-any',searchArray));
+    this.searchResult=[]
+    getDocs(search).then((response:any)=>response.forEach((doc:any) => {
+      if(doc.id!==this.senderId){
+      this.searchResult.push({id:doc.id,name:String(doc.data().userName).replaceAll(',','')});
+      console.log(doc.id, ' => ', doc.data());
+    }
+  }))
   }
+  else{
+    this.searchResult=null;
+  }
+}
 
 createChat(uid:any){
-    const senderId=localStorage.getItem('uid')??'';
-    this.userschatReff=collection(this.dataBase,'usersChatlists',senderId,'chats');
+
+    this.userschatReff=collection(this.dataBase,'usersChatlists',this.senderId,'chats');
     const idArray:any=[]
+    const messagIdArray:any=[]
     getDocs(this.userschatReff).then((response:any)=>
     {response.forEach((result:any)=>{
       console.log(result.id);
+      if(result.id==uid){
+        this.chatId=result.data()?.id
+      }
       idArray.push(result.id);
+      messagIdArray.push(result.data()?.id)
 
     })
     console.log(idArray,uid);
 
     if(idArray.includes(uid)){
-      console.log('Chat All ready Exists')
+      console.log('Chat All ready Exists',this.chatId)
     }
     else{
-      let chatId:any;
-      console.log('creating new chat with ',uid);
-      addDoc(this.chatsReff, {messages:[]}).then((response:any)=>{
-
-        chatId=response.id
+        console.log('creating new chat with ',uid);
+        addDoc(this.chatsReff, {messages:[]}).then((response:any)=>{
+        this.chatId=response.id
         const recieverId=uid;
-        const senderData={id:chatId,reciever:recieverId};
-        const recieverData={id:chatId,reciever:senderId};
-        const sender=collection(this.dataBase,'usersChatlists',senderId,'chats');
+        const senderData={id:this.chatId,reciever:recieverId};
+        const recieverData={id:this.chatId,reciever:this.senderId};
+        const sender=collection(this.dataBase,'usersChatlists',this.senderId,'chats');
         const reciever=collection(this.dataBase,'usersChatlists',recieverId,'chats');
-        // console.log(data,senderId,recieverId);
-
         setDoc(doc(sender,recieverId),senderData).then((response:any)=>console.log(response||'Success-Sender')).catch(()=>console.log('Error'))
-        setDoc(doc(reciever,senderId),recieverData).then((response:any)=>console.log(response||'Success-Reciever')).catch(()=>console.log('Error'))
-
-
+        setDoc(doc(reciever,this.senderId),recieverData).then((response:any)=>console.log(response||'Success-Reciever')).catch(()=>console.log('Error'))
       })
-
-      //{id:chatId,name=userName}
-      //create message id
-      //add reffrence object to usersChatlists/userId/chats to both the users
     }
     })
   }

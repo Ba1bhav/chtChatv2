@@ -1,4 +1,4 @@
-import { Component, OnInit,AfterViewChecked,ChangeDetectorRef, AfterViewInit} from '@angular/core';
+import { Component, OnInit,AfterViewChecked,ChangeDetectorRef, AfterViewInit, Input, OnChanges, SimpleChanges, AfterContentChecked, AfterContentInit} from '@angular/core';
 import { urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import{doc,arrayUnion,updateDoc, onSnapshot} from'firebase/firestore'
@@ -9,32 +9,38 @@ import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit,AfterViewChecked,AfterViewInit{
+export class ChatComponent implements AfterViewChecked,OnChanges,AfterViewInit{
 userData: any;
 dataBase:any;
 dataBaseReffrence:any;
-chatsReff:any;
 messages:any=[]
 senderId=localStorage.getItem('uid');
 unsubscribeListener:any;
 attachmentFile:any;
 attachmentFileUrl:any;
 imageExtensions=['jpg','jpeg','gif','png','webp']
+@Input() chatId:any;
+@Input() chatName:any;
+matmenuwidth={
+  'min-width':'200px'
+  }
 constructor(private httpRequests:HttpRequestsService,private fireBaseService:FirebaseService,private changeDetector:ChangeDetectorRef){
   this.dataBase=fireBaseService.getDb();
-  this.dataBaseReffrence=doc(this.dataBase,'chats','NvuhjlRARx7AF2Fo6TGV');
-  this.chatsReff=doc(this.dataBase, "chats",'NvuhjlRARx7AF2Fo6TGV');
-
 }
 
-ngOnInit() {
-  this.unsubscribeListener = onSnapshot(doc(this.dataBase, "chats",'NvuhjlRARx7AF2Fo6TGV'), (doc) => {
-    this.messages=doc?.data()?.['messages']})
+ngAfterViewChecked() {
+  this.changeDetector.detectChanges()
 }
 ngAfterViewInit(){
   this.changeDetector.detectChanges()
 }
-ngAfterViewChecked() {
+ngOnChanges(){
+
+  if(this.chatId){
+    this.dataBaseReffrence=doc(this.dataBase,'chats',this.chatId);
+    this.unsubscribeListener = onSnapshot(doc(this.dataBase, "chats",this.chatId), (doc) => {
+    this.messages=doc?.data()?.['messages']})
+  }
   this.changeDetector.detectChanges()
 }
 
@@ -42,14 +48,14 @@ errorImageHandler(imageEvent:any) {
   imageEvent.target.src=urls.defaultProfile;
   }
 sendMessage(message:any,type:number){
-  if(type=1){
+  if(type==1){
     const messageData=message;
-    updateDoc(this.chatsReff, {messages:arrayUnion({message:messageData,senderId:this.senderId,type:type,date:String(new Date())})}).then((response:any)=>{console.log('Message Send Successfully');
+    updateDoc(this.dataBaseReffrence, {messages:arrayUnion({message:messageData,senderId:this.senderId,type:type,date:String(new Date())})}).then((response:any)=>{console.log('Message Send Successfully');
   })
   }
   else{
   const messageData=message.value;
-  updateDoc(this.chatsReff, {messages:arrayUnion({message:messageData,senderId:this.senderId,type:type,date:String(new Date())})}).then((response:any)=>{console.log('Message Send Successfully');
+  updateDoc(this.dataBaseReffrence, {messages:arrayUnion({message:messageData,senderId:this.senderId,type:type,date:String(new Date())})}).then((response:any)=>{console.log('Message Send Successfully');
   })
   message.value='';
 }
@@ -97,5 +103,8 @@ attchmentUpload(){
   deleteMessage(index:any){
     this.messages.splice(index,1)
   }
-
+  closeChat(){
+    this.chatId=null;
+    this.unsubscribeListener()
+  }
 }

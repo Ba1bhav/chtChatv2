@@ -1,4 +1,8 @@
-<table style="width: 100%;height: 100%; overflow: hidden;">
+<ng-container *ngIf="!chatId">
+  <app-chat-room-info></app-chat-room-info>
+</ng-container>
+<ng-container  *ngIf="chatId">
+<table  style="width: 100%;height: 100%; overflow: hidden;">
   <thead style="width: 100%;background-color: rgb(243,243,243);">
     <header class="msger-header">
       <div class="msger-header-title" style="align-self: center;">
@@ -10,21 +14,26 @@
       <div  style="align-self: center;color:black;font-size:30px;">Start Chatting</div>
       <div class="msger-header-options">
 
-          <button style="background-color: transparent;border: none; padding: 15px;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <button style="background-color: transparent;border: none; padding: 15px;" mat-icon-button [matMenuTriggerFor]="menu" >
           <mat-icon>more_vert</mat-icon>
         </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item>
+        <mat-menu  #menu="matMenu" class="mat-menu-width">
+          <button mat-menu-item style="width: 150px;">
             <mat-icon>info</mat-icon>
             <span>info</span>
           </button>
-          <button mat-menu-item disabled>
+
+          <button mat-menu-item disabled  style="width: 150px;">
             <mat-icon>notifications_off</mat-icon>
             <span>Disable</span>
           </button>
-          <button mat-menu-item>
+          <button mat-menu-item style="width: 150px;">
             <mat-icon>exit_to_app</mat-icon>
             <span>leave chat</span>
+          </button>
+          <button mat-menu-item style="width: 150px;" (click)="closeChat()">
+            <mat-icon>clear</mat-icon>
+            <span>close</span>
           </button>
         </mat-menu>
       </div>
@@ -34,7 +43,7 @@
   <tbody style="height: 75%;display: block;overflow: -moz-hidden-unscrollable;width: 100%;">
     <section class="msger" style="display: contents;overflow: scroll;width: 100%;" >
        <ng-container >
-      <ng-container >
+      <ng-container *ngIf="chatId">
         <main  class="msger-chat" style="height: 650px" id='chats' #test [scrollTop]="test.scrollHeight" >
           <ng-container *ngFor="let message of messages;let index=index">
               <div [ngClass]="message.senderId==senderId?'msg right-msg':'msg left-msg'">
@@ -89,6 +98,6 @@
         </ng-container>
   </tfoot>
 </table>
-
+</ng-container>
 
 

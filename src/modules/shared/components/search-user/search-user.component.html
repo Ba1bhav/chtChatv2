@@ -55,7 +55,7 @@
               <div>
                 <div style="text-align: center;width: 100%;">Chats</div>
                 <ng-container *ngFor="let chat of chatsList">
-                  <div type="button" class="chatList-chatButton" >
+                  <div type="button" class="chatList-chatButton" (click)="createChat(chat?.reciever)" >
                     <div style="align-self: center;"><img class="msg-img" style="height: 50px; border-radius: 70%;width: 50px;" [src]="userData?.id" (error)="errorImageHandler($event)" >
                     </div>
                     <div style="align-self: center;margin-right: 5%;">{{chat?.reciever}}</div>
@@ -69,8 +69,9 @@
         </table>
 
     </td>
-    <td>
-      <app-chat></app-chat>
+
+    <td >
+      <app-chat [chatId]="chatId" [chatName]="chatName"></app-chat>
     </td>
     <!-- <td style="width: 70%;background-image: url({{urls.chatsBackground}});"><app-chat-room-info style="display: block;"></app-chat-room-info></td> -->
   </tr>
