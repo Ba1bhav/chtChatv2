@@ -12,153 +12,155 @@ import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 })
 export class CreateGroupChatComponent {
   dataBase: any;
-  searchInputDebounce:any;
-  searchResult:any;
+  searchInputDebounce: any;
+  searchResult: any;
   senderId: any;
-  chatMembersIds:any=[];
-  chatMembers:any=[];
-  url=urls;
-  groupChatForm!:FormGroup;
+  chatMembersIds: any = [];
+  chatMembers: any = [];
+  url = urls;
+  groupChatForm!: FormGroup;
   dataBaseReffrence: any;
   chatsReff: any;
   usersChatlistsReff: any;
   chatId: any;
   groupProfilePic: any;
-  groupProfileLocalUrl:any;
-  groupProfileStorageUrl:any;
-  errorToggle: boolean=false;
-  imageExtensions=['jpg','jpeg','gif','png','webp']
-  imageErrorToggle: boolean=false;
-  hasImage:boolean=false;
-  constructor(private fireBaseService:FirebaseService,private httpRequests:HttpRequestsService){
-      this.senderId=localStorage.getItem('uid')??''
-      this.dataBase=fireBaseService.getDb();
-      this.dataBaseReffrence=doc(this.dataBase,'chats',this.senderId);
-      this.chatsReff=collection(this.dataBase, "chats");
-      this.groupChatForm=new FormGroup({
-        name:new FormControl('',[Validators.required,Validators.minLength(3)]),
-        moto:new FormControl(),
-      })
-    }
+  groupProfileLocalUrl: any;
+  groupProfileStorageUrl: any;
+  errorToggle: boolean = false;
+  imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'webp']
+  imageErrorToggle: boolean = false;
+  hasImage: boolean = false;
+  constructor(private fireBaseService: FirebaseService, private httpRequests: HttpRequestsService) {
+    this.senderId = localStorage.getItem('uid') ?? ''
+    this.dataBase = fireBaseService.getDb();
+    this.dataBaseReffrence = doc(this.dataBase, 'chats', this.senderId);
+    this.chatsReff = collection(this.dataBase, "chats");
+    this.groupChatForm = new FormGroup({
+      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      moto: new FormControl(),
+    })
+  }
 
-  searchUser(inputEvent:any){
+  searchUser(inputEvent: any) {
     console.log(inputEvent?.value);
     clearTimeout(this.searchInputDebounce)
-    this.searchInputDebounce=setTimeout(()=>{
+    this.searchInputDebounce = setTimeout(() => {
       console.log('Searching ... ');
       this.searchQuery(Array.from(inputEvent.value))
-    },1000)
+    }, 1000)
   }
-  searchQuery(searchArray:any){
-  console.log('response');
-  if(searchArray.length>0){
-    const search=query(collection(this.dataBase, 'usersChatlists'), where('userName','array-contains-any',searchArray));
-    this.searchResult=[]
-    getDocs(search).then((response:any)=>response.forEach((doc:any) => {
-      if(doc?.id!==this.senderId&& !(this.chatMembersIds.includes(doc?.id))){
-      this.searchResult.push({id:doc?.id,name:String(doc.data()?.userName).replaceAll(',','')});
+  searchQuery(searchArray: any) {
+    console.log('response');
+    if (searchArray.length > 0) {
+      const search = query(collection(this.dataBase, 'usersChatlists'), where('userName', 'array-contains-any', searchArray));
+      this.searchResult = []
+      getDocs(search).then((response: any) => response.forEach((doc: any) => {
+        if (doc?.id !== this.senderId && !(this.chatMembersIds.includes(doc?.id))) {
+          this.searchResult.push({ id: doc?.id, name: String(doc.data()?.userName).replaceAll(',', '') });
+        }
+      }))
     }
-    }))
+    else {
+      this.searchResult = null;
     }
-    else{
-      this.searchResult=null;
-    }
-    }
+  }
 
-  addMember(id:any,name:any){
-    this.chatMembers.push({id:id,name:name})
+  addMember(id: any, name: any) {
+    this.chatMembers.push({ id: id, name: name })
     this.chatMembersIds.push(id)
   }
-  removeMember(index:number){
-    this.chatMembers.splice(index,1)
+  removeMember(index: number) {
+    this.chatMembers.splice(index, 1)
   }
-  createGroup(){
+  createGroup() {
     this.chatMembersIds.push(this.senderId)
     console.log('creating new Group');
-    addDoc(this.chatsReff, {messages:[]}).then((response:any)=>{
+    addDoc(this.chatsReff, { messages: [] }).then((response: any) => {
       console.log(response?.id);
-      this.chatId=response.id
-      const groupData=this.groupChatForm.value;
-      groupData.reciever=this.chatId;
-      groupData.id=this.chatId;
-      groupData.profile=this.groupProfileStorageUrl??'';
-      this.chatMembersIds.forEach((member:any)=>{
-      const reciever=collection(this.dataBase,'usersChatlists',member,'chats');
-      setDoc(doc(reciever,this.chatId),groupData).then((response:any)=>console.log(response||'Member Added Successfully ',member)).catch(()=>console.log('Error'))
-      })})
+      this.chatId = response.id
+      const groupData = this.groupChatForm.value;
+      groupData.reciever = this.chatId;
+      groupData.id = this.chatId;
+      groupData.profile = this.groupProfileStorageUrl ?? '';
+      this.chatMembersIds.forEach((member: any) => {
+        const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
+        setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Added Successfully ', member)).catch(() => console.log('Error'))
+      })
+    })
   }
-  profilePicHandler(fileinputEvent:any){
-    this.groupProfilePic=fileinputEvent?.srcElement?.files[0];
-    this.groupProfilePic.isImage=this.imageExtensions.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
-    if(this.groupProfilePic.isImage){
+  profilePicHandler(fileinputEvent: any) {
+    this.groupProfilePic = fileinputEvent?.srcElement?.files[0];
+    this.groupProfilePic.isImage = this.imageExtensions.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
+    if (this.groupProfilePic.isImage) {
       let reader = new FileReader();
       reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
       reader.onload = (_event) => {
         this.groupProfileLocalUrl = reader.result;
-        this.hasImage=true;
-    }}
-    else{
-      this.groupProfilePic=null;
-      this.groupProfileLocalUrl='';
+        this.hasImage = true;
+      }
+    }
+    else {
+      this.groupProfilePic = null;
+      this.groupProfileLocalUrl = '';
       this.imageErrorToggler()
     }
 
- }
+  }
 
- uploadPicCreateGroup(){
-  this.chatMembersIds.push(this.senderId)
-  console.log('creating new Group with profile pic');
-  addDoc(this.chatsReff, {messages:[]}).then((response:any)=>{
-    console.log(response?.id);
-    this.chatId=response.id
-    const imageId=response.id;
-      const app=this.fireBaseService.app()
-      const storage=getStorage(app)
-      const imageref=ref(storage,'/'+imageId)
+  uploadPicCreateGroup() {
+    this.chatMembersIds.push(this.senderId)
+    console.log('creating new Group with profile pic');
+    addDoc(this.chatsReff, { messages: [] }).then((response: any) => {
+      console.log(response?.id);
+      this.chatId = response.id
+      const imageId = response.id;
+      const app = this.fireBaseService.app()
+      const storage = getStorage(app)
+      const imageref = ref(storage, '/' + imageId)
       const uploadTask = uploadBytesResumable(imageref, this.groupProfilePic);
       uploadTask.on('state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-        switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
-            break;
-          case 'running':
-            console.log('Upload is running');
-            break;
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          switch (snapshot.state) {
+            case 'paused':
+              console.log('Upload is paused');
+              break;
+            case 'running':
+              console.log('Upload is running');
+              break;
+          }
+        },
+        (error) => {
+          console.log(error)
         }
-      },
-      (error) => {
-        console.log(error)
-        }
-      ,
-      () => {
-        this.httpRequests.getDownloadLink(imageId).subscribe((response:any)=>{
-          const downloadUrl=urls.storage+imageId+'?alt=media&token='+response?.downloadTokens;
-          this.groupProfilePic=null;
-          this.groupProfileStorageUrl=downloadUrl;
-          const groupData=this.groupChatForm.value;
-          groupData.reciever=this.chatId;
-          groupData.id=this.chatId;
-          groupData.profile=this.groupProfileStorageUrl??'';
-          this.chatMembersIds.forEach((member:any)=>{
-          const reciever=collection(this.dataBase,'usersChatlists',member,'chats');
-          setDoc(doc(reciever,this.chatId),groupData).then((response:any)=>console.log(response||'Member Added Successfully ',member)).catch(()=>console.log('Error'))
+        ,
+        () => {
+          this.httpRequests.getDownloadLink(imageId).subscribe((response: any) => {
+            const downloadUrl = urls.storage + imageId + '?alt=media&token=' + response?.downloadTokens;
+            this.groupProfilePic = null;
+            this.groupProfileStorageUrl = downloadUrl;
+            const groupData = this.groupChatForm.value;
+            groupData.reciever = this.chatId;
+            groupData.id = this.chatId;
+            groupData.profile = this.groupProfileStorageUrl ?? '';
+            this.chatMembersIds.forEach((member: any) => {
+              const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
+              setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Added Successfully ', member)).catch(() => console.log('Error'))
+            })
+          })
         })
-        })
-        })
-      })
-    }
-  errorToggler(){
-    this.errorToggle=true;
-    setTimeout(()=>{this.errorToggle=false},1300)
+    })
   }
-  imageErrorToggler(){
-    this.imageErrorToggle=true;
-    setTimeout(()=>{this.imageErrorToggle=false},1300)
+  errorToggler() {
+    this.errorToggle = true;
+    setTimeout(() => { this.errorToggle = false }, 1300)
   }
-  imageAlternate(imageEvent:any) {
-    imageEvent.target.src=urls.defaultProfile;
+  imageErrorToggler() {
+    this.imageErrorToggle = true;
+    setTimeout(() => { this.imageErrorToggle = false }, 1300)
+  }
+  imageAlternate(imageEvent: any) {
+    imageEvent.target.src = urls.defaultProfile;
   }
 }
