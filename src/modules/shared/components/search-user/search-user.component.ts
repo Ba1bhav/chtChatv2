@@ -3,6 +3,7 @@ import { urls } from 'src/commons/constants';
 import { Router } from '@angular/router';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { getDoc,collection,doc, where, query, getDocs, addDoc, setDoc } from 'firebase/firestore';
+
 @Component({
   selector: 'app-search-user',
   templateUrl: './search-user.component.html',

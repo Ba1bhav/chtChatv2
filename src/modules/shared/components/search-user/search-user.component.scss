@@ -34,3 +34,36 @@
   border:solid;
   border-color: rgb(50, 9, 231);
 }
+.add-icon-custom{
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  float: right;
+  color: antiquewhite;
+  background-color: grey;
+
+ }
+ .add-icon-custom:hover{
+   width: 50px;
+   height: 50px;
+   border-radius: 50px;
+   border-color: lightblue;
+   float: right;
+   color: antiquewhite;
+   background-color: rgb(2, 104, 219);
+
+  }
+
+  .add-icon{
+    font-size: 45px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+  }
+  .add-icon-rotate{
+    font-size: 45px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transform: rotate(30deg);
+  }

@@ -33,7 +33,7 @@
           </div>
         </div>
         </thead>
-        <tbody>
+        <tbody style="height: 75%;">
           <tr *ngIf="searchResult&&searchResult.length>0">
             <td>
               <div>
@@ -56,8 +56,9 @@
                 <div style="text-align: center;width: 100%;">Chats</div>
                 <ng-container *ngFor="let chat of chatsList">
                   <div type="button" class="chatList-chatButton" (click)="createChat(chat?.reciever)" >
-                    <div style="align-self: center;"><img class="msg-img" style="height: 50px; border-radius: 70%;width: 50px;" [src]="userData?.id" (error)="errorImageHandler($event)" >
+                    <div style="align-self: center;"><img class="msg-img" style="height: 50px; border-radius: 70%;width: 50px;" [src]="chat?.profile" (error)="errorImageHandler($event)" >
                     </div>
+                    <div style="align-self: center;margin-right: 5%;">{{chat?.name}}</div>
                     <div style="align-self: center;margin-right: 5%;">{{chat?.reciever}}</div>
                   </div>
                 </ng-container>
@@ -66,12 +67,24 @@
             </td>
           </tr>
         </tbody>
+        <tfoot style="height: 50px;">
+          <div type="button" mat-button #addmenu="matMenuTrigger"  (mouseover)="addmenu.openMenu()"  [matMenuTriggerFor]="aboveMenu" class="add-icon-custom">
+            <mat-icon [ngClass]="addmenu.menuOpen?'add-icon-rotate':'add-icon'">add</mat-icon>
+            <mat-menu  #aboveMenu="matMenu" yPosition="above">
+              <div (mouseleave)="addmenu.closeMenu()">
+              <button mat-menu-item><mat-icon> textsms</mat-icon> Create Group</button>
+              <button mat-menu-item disabled>Future Option</button>
+            </div>
+            </mat-menu>
+          </div>
+        </tfoot>
         </table>
 
     </td>
 
     <td >
-      <app-chat [chatId]="chatId" [chatName]="chatName"></app-chat>
+      <app-create-group-chat></app-create-group-chat>
+      <!-- <app-chat [chatId]="chatId" [chatName]="chatName"></app-chat> -->
     </td>
     <!-- <td style="width: 70%;background-image: url({{urls.chatsBackground}});"><app-chat-room-info style="display: block;"></app-chat-room-info></td> -->
   </tr>
