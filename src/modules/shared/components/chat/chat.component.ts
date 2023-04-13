@@ -1,7 +1,7 @@
-import { Component, OnInit,AfterViewChecked,ChangeDetectorRef, AfterViewInit, Input, OnChanges, SimpleChanges, AfterContentChecked, AfterContentInit} from '@angular/core';
+import { Component,AfterViewChecked,ChangeDetectorRef, AfterViewInit, Input, OnChanges} from '@angular/core';
 import { urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
-import{doc,arrayUnion,updateDoc, onSnapshot} from'firebase/firestore'
+import{doc,arrayUnion,updateDoc, onSnapshot, deleteDoc} from'firebase/firestore'
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 @Component({
@@ -18,12 +18,15 @@ senderId=localStorage.getItem('uid');
 unsubscribeListener:any;
 attachmentFile:any;
 attachmentFileUrl:any;
-imageExtensions=['jpg','jpeg','gif','png','webp']
+imageExtensions=['jpg','jpeg','gif','png','webp'];
 @Input() chatId:any;
 @Input() chatName:any;
 matmenuwidth={
   'min-width':'200px'
   }
+
+chatRoomInfo: any;
+switchResponse='0';
 constructor(private httpRequests:HttpRequestsService,private fireBaseService:FirebaseService,private changeDetector:ChangeDetectorRef){
   this.dataBase=fireBaseService.getDb();
 }
@@ -39,6 +42,9 @@ ngOnChanges(){
   if(this.chatId){
     this.dataBaseReffrence=doc(this.dataBase,'chats',this.chatId);
     this.unsubscribeListener = onSnapshot(doc(this.dataBase, "chats",this.chatId), (doc) => {
+      console.log(doc?.data(),this.chatId);
+
+    this.chatRoomInfo=doc?.data()?.['info']
     this.messages=doc?.data()?.['messages']})
   }
   this.changeDetector.detectChanges()
@@ -63,7 +69,7 @@ sendMessage(message:any,type:number){
 fileAttach(fileEvent:any){
 this.attachmentFile=fileEvent?.srcElement?.files[0];
 this.attachmentFile.isImage=this.imageExtensions.includes(this.attachmentFile.type.split('/')[1].toLowerCase())
-let reader = new FileReader();
+const reader = new FileReader();
 reader.readAsDataURL(fileEvent?.srcElement?.files[0]);
 reader.onload = (_event) => {
   this.attachmentFileUrl = reader.result;
@@ -107,4 +113,11 @@ attchmentUpload(){
     this.chatId=null;
     this.unsubscribeListener()
   }
+  leaveChat(){
+    const deleteDocRef=doc(this.dataBase, 'usersChatlists', this.senderId??'', 'chats',this.chatId);
+     deleteDoc(deleteDocRef).then(()=>console.log('chat with id ',this.chatId,' has been removed !'))
+     this.chatId=null;
+
+  }
+
 }

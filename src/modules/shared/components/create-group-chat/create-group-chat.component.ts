@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { addDoc, collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
@@ -11,6 +11,7 @@ import { HttpRequestsService } from 'src/services/shared/http-requests.service';
   styleUrls: ['./create-group-chat.component.scss']
 })
 export class CreateGroupChatComponent {
+
   dataBase: any;
   searchInputDebounce: any;
   searchResult: any;
@@ -26,10 +27,10 @@ export class CreateGroupChatComponent {
   groupProfilePic: any;
   groupProfileLocalUrl: any;
   groupProfileStorageUrl: any;
-  errorToggle: boolean = false;
+  errorToggle= false;
   imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'webp']
-  imageErrorToggle: boolean = false;
-  hasImage: boolean = false;
+  imageErrorToggle= false;
+  hasImage= false;
   constructor(private fireBaseService: FirebaseService, private httpRequests: HttpRequestsService) {
     this.senderId = localStorage.getItem('uid') ?? ''
     this.dataBase = fireBaseService.getDb();
@@ -71,11 +72,13 @@ export class CreateGroupChatComponent {
   }
   removeMember(index: number) {
     this.chatMembers.splice(index, 1)
+    this.chatMembersIds.splice(index, 1)
   }
   createGroup() {
     this.chatMembersIds.push(this.senderId)
+
     console.log('creating new Group');
-    addDoc(this.chatsReff, { messages: [] }).then((response: any) => {
+    addDoc(this.chatsReff, { info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileStorageUrl ?? ''}],messages: [] }).then((response: any) => {
       console.log(response?.id);
       this.chatId = response.id
       const groupData = this.groupChatForm.value;
@@ -92,7 +95,7 @@ export class CreateGroupChatComponent {
     this.groupProfilePic = fileinputEvent?.srcElement?.files[0];
     this.groupProfilePic.isImage = this.imageExtensions.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
     if (this.groupProfilePic.isImage) {
-      let reader = new FileReader();
+      const reader = new FileReader();
       reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
       reader.onload = (_event) => {
         this.groupProfileLocalUrl = reader.result;
@@ -110,7 +113,7 @@ export class CreateGroupChatComponent {
   uploadPicCreateGroup() {
     this.chatMembersIds.push(this.senderId)
     console.log('creating new Group with profile pic');
-    addDoc(this.chatsReff, { messages: [] }).then((response: any) => {
+    addDoc(this.chatsReff,{ info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileStorageUrl ?? ''}],messages: [] }).then((response: any) => {
       console.log(response?.id);
       this.chatId = response.id
       const imageId = response.id;

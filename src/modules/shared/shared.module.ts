@@ -7,12 +7,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import { CreateGroupChatComponent } from './components/create-group-chat/create-group-chat.component';
+import { UserInfoComponent } from './components/user-info/user-info.component';
 @NgModule({
   declarations: [
     ChatRoomInfoComponent,
     ChatComponent,
     SearchUserComponent,
     CreateGroupChatComponent,
+    UserInfoComponent,
   ],
   imports: [
     CommonModule,

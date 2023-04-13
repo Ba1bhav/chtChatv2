@@ -2,7 +2,7 @@ import { Component, OnInit} from '@angular/core';
 import { urls } from 'src/commons/constants';
 import { Router } from '@angular/router';
 import { FirebaseService } from 'src/services/shared/firebase.service';
-import { getDoc,collection,doc, where, query, getDocs, addDoc, setDoc } from 'firebase/firestore';
+import { getDoc,collection,doc, where, query, getDocs, addDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 @Component({
   selector: 'app-search-user',
@@ -24,6 +24,8 @@ export class SearchUserComponent implements OnInit{
   chatName:any='some name here'
   chatId:any;
   senderId=localStorage.getItem('uid')??'';
+  switchReponse: any='0';
+  chatlistListener:any;
 constructor(private router:Router,private fireBaseService:FirebaseService){
   this.dataBase=fireBaseService.getDb();
   this.dataBaseReffrence=doc(this.dataBase,'chats',this.senderId);
@@ -32,11 +34,13 @@ constructor(private router:Router,private fireBaseService:FirebaseService){
 
 }
 ngOnInit() {
-  getDocs(this.usersChatlistsReff).then((response:any)=>
-  {response.forEach((result:any)=>{
-    console.log(result.id,'->',result.data());
-    this.chatsList.push(result.data())
-  })})
+  this.chatlistListener = onSnapshot(collection(this.dataBase, 'usersChatlists',localStorage.getItem('uid')??'','chats'), (collection) => {
+    this.chatsList=[];
+    collection.docs.forEach((result:any)=>{
+      this.chatsList.push(result.data())
+
+    })})
+
 }
 errorImageHandler(imageEvent:any) {
     imageEvent.target.src=urls.defaultProfile;
@@ -77,12 +81,13 @@ createChat(uid:any){
     const messagIdArray:any=[]
     getDocs(this.userschatReff).then((response:any)=>
     {response.forEach((result:any)=>{
-      console.log(result.id);
+      console.log(result?.id);
       if(result.id==uid){
-        this.chatId=result.data()?.id
+        this.chatId=result?.data()?.id
+        this.switchReponse='0'
       }
-      idArray.push(result.id);
-      messagIdArray.push(result.data()?.id)
+      idArray.push(result?.id);
+      messagIdArray.push(result?.data()?.id)
 
     })
     console.log(idArray,uid);
@@ -93,7 +98,8 @@ createChat(uid:any){
     else{
         console.log('creating new chat with ',uid);
         addDoc(this.chatsReff, {messages:[]}).then((response:any)=>{
-        this.chatId=response.id
+        this.chatId=response?.id
+        this.switchReponse='0'
         const recieverId=uid;
         const senderData={id:this.chatId,reciever:recieverId};
         const recieverData={id:this.chatId,reciever:this.senderId};
@@ -104,5 +110,8 @@ createChat(uid:any){
       })
     }
     })
+  }
+  createGroup(){
+    this.switchReponse='1';
   }
 }

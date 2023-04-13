@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getAuth, RecaptchaVerifier,signInWithPhoneNumber} from "firebase/auth";
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import { WindowService } from 'src/services/shared/window.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
@@ -29,12 +31,14 @@ export class SignInComponent implements OnInit{
 //metamask
 isMetaMaskPresent:boolean=false;
 etherium:any;
+dataBase: any;
 //metamask
 
-  constructor(private requests:HttpRequestsService,private window:WindowService,private firbaseService:FirebaseService){
+  constructor(private router:Router,private requests:HttpRequestsService,private window:WindowService,private firbaseService:FirebaseService){
     this.windowRef=window.windowRef;
     this.etherium=this.windowRef.ethereum
     this.isMetaMaskPresent=this.etherium?this.etherium.isMetaMask:false;
+    this.dataBase=firbaseService.getDb();
     this.loginForm=new FormGroup({
       phone:new FormControl('',[Validators.required,Validators.minLength(10),Validators.maxLength(10),Validators.pattern('[0-9]{10}')]),
     })
@@ -89,7 +93,7 @@ etherium:any;
    sendOtp(){
       const appVerifier = this.windowRef.recaptchaVerifier;
       if(this.isHuman){
-      signInWithPhoneNumber(this.auth,'+918628921043', appVerifier).then((result:any) => {
+      signInWithPhoneNumber(this.auth,'+91'+this.loginForm.value?.phone, appVerifier).then((result:any) => {
         this.otpInputToggle=true;
         console.log(result)
         this.windowRef.confirmationResult = result;
@@ -108,16 +112,16 @@ etherium:any;
    }
 
  verifyOtp(code:string)
-      { code='123456'
+      { code=this.otp
         this.windowRef.confirmationResult.confirm(code).then((result:any) => {
         const user = result.user;
-        console.log(result);
-
+        // console.log(result);
         localStorage.setItem('uid',result?.user?.uid)
-        localStorage.setItem('idToken',result?._tokenResponse?.idToken)
-        console.log(result)
+        localStorage.setItem('idToken',result?._tokenResponse?.idToken);
+        this.createUidDoc(result?.user?.uid)
+        // console.log(result)
       }).catch((error:any) => {
-        console.log(error)
+        // console.log(error)
         this.loginForm.get('phone')?.enable()
       });
   }
@@ -140,6 +144,7 @@ etherium:any;
               .then((accounts:any)=>{
                 console.log(accounts)
                 localStorage.setItem('uid',accounts[0])
+                this.createUidDoc(accounts[0])
                 this.requests.getUser(true).subscribe(
                   (response:any)=>console.log('redirect',response),
                   ()=>{this.requests.registerUser(true).subscribe((response:any)=>console.log('mask',response))})
@@ -156,6 +161,7 @@ etherium:any;
             }
             else{
               localStorage.setItem('uid',accounts[0])
+              this.createUidDoc(accounts[0])
               console.log('success');
             }
           })
@@ -178,4 +184,24 @@ etherium:any;
     console.log('Create Meta Mask Account')
     window.open('https://metamask.io/download/')
     }
+
+  createUidDoc(uid:any){
+    const getDocReff=doc(this.dataBase,'usersChatlists',uid)
+    getDoc(getDocReff).then((data:any)=>{
+      if(!data.exists()){
+        console.log('creating New');
+        setDoc(doc(this.dataBase,'usersChatlists',uid),{userName:[]});
+        this.router.navigate(['dashboard'])
+      }
+      else{
+        console.log('Account Allready exsists !');
+        this.router.navigate(['dashboard'])
+
+      }
+
+    })
+  }
+
+
 }
+

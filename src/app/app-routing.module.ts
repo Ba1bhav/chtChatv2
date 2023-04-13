@@ -5,6 +5,7 @@ import { SearchUserComponent } from 'src/modules/shared/components/search-user/s
 
 const routes: Routes = [
   {path:'login',component:SignInComponent},
+  {path:'dashboard',component:SearchUserComponent},
   {path:'',component:SearchUserComponent}
 
 ];

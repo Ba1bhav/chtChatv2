@@ -81,7 +81,7 @@
             <mat-icon [ngClass]="addmenu.menuOpen?'add-icon-rotate':'add-icon'">add</mat-icon>
             <mat-menu #aboveMenu="matMenu" yPosition="above">
               <div (mouseleave)="addmenu.closeMenu()">
-                <button mat-menu-item><mat-icon> textsms</mat-icon> Create Group</button>
+                <button mat-menu-item (click)="createGroup()"><mat-icon> textsms</mat-icon> Create Group</button>
                 <button mat-menu-item disabled>Future Option</button>
               </div>
             </mat-menu>
@@ -91,9 +91,12 @@
 
     </td>
 
-    <td>
-      <app-create-group-chat></app-create-group-chat>
-      <!-- <app-chat [chatId]="chatId" [chatName]="chatName"></app-chat> -->
+    <td >
+      <ng-container [ngSwitch]="switchReponse">
+        <app-user-info  *ngSwitchCase="'2'"></app-user-info>
+        <app-create-group-chat *ngSwitchCase="'1'"></app-create-group-chat>
+        <app-chat *ngSwitchCase="'0'" [chatId]="chatId" [chatName]="chatName"></app-chat>
+      </ng-container>
     </td>
     <!-- <td style="width: 70%;background-image: url({{urls.chatsBackground}});"><app-chat-room-info style="display: block;"></app-chat-room-info></td> -->
   </tr>

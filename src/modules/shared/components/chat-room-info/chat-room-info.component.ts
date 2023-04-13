@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
-import { FirebaseService } from 'src/services/shared/firebase.service';
-import { HttpRequestsService } from 'src/services/shared/http-requests.service';
-import{getStorage,ref, uploadBytesResumable} from'firebase/storage'
-import {FormControl,FormGroup,Validators } from '@angular/forms';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { addDoc, collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { urls } from 'src/commons/constants';
+import { FirebaseService } from 'src/services/shared/firebase.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 // {uid:,id:,phone_number,profile,name}
 //
 @Component({
@@ -11,98 +12,180 @@ import { urls } from 'src/commons/constants';
   templateUrl: './chat-room-info.component.html',
   styleUrls: ['./chat-room-info.component.scss']
 })
-export class ChatRoomInfoComponent{
-file:any;
-userData:any={};
-userDataKey:any;
-urls=urls
-isAnonymous:boolean=localStorage.getItem('uid')?.startsWith('0x')?true:false;
-profileForm!:FormGroup ;
-constructor(private firebase:FirebaseService,private httpRequests:HttpRequestsService){
-  httpRequests.getUser(this.isAnonymous).subscribe((response:any)=>{
-    this.userDataKey=Object.keys(response)
-    this.userData=Object.values(response)[0];
-    this.userData.id=this.isAnonymous?parseInt(this.userData.uid,16).toString():this.userData.id;
-    this.setProfileForm()
-    this.profileForm.disable()
-
-  })
-
-
-}
-
-
-setProfileForm(){
-  this.profileForm=new FormGroup({
-    uid:new FormControl(this.userData.uid),
-    id:new FormControl(this.userData.id),
-    phone_number:new FormControl(this.userData.phone_number),
-    name:new FormControl(this.userData?.name??'Anonymous',[Validators.required]),
-    profile:new FormControl(this.userData.profile),
-  })
-}
-getFile(event:any){
-this.file=event.srcElement.files[0]
-this.updateProfilePic()
-}
-updateProfilePic(){
-  const app=this.firebase.app()
-  const storage=getStorage(app)
-  const data=localStorage.getItem('uid')||'';
-  const imageref=ref(storage,'/'+this.userData.uid||'')
-  const metadata = {
-    contentType: 'image/jpeg',
-  };
-
-  const uploadTask = uploadBytesResumable(imageref, this.file, metadata);
-
-  uploadTask.on('state_changed',
-  (snapshot) => {
-    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    console.log('Upload is ' + progress + '% done');
-    switch (snapshot.state) {
-      case 'paused':
-        console.log('Upload is paused');
-        break;
-      case 'running':
-        console.log('Upload is running');
-        break;
-    }
-  },
-  (error) => {
-    switch (error.code) {
-      case 'storage/unauthorized':
-        // User doesn't have permission to access the object
-        break;
-      case 'storage/canceled':
-        // User canceled the upload
-        break;
-
-      // ...
-
-      case 'storage/unknown':
-        // Unknown error occurred, inspect error.serverResponse
-        break;
-    }
-  },
-  () => {
-    this.httpRequests.getDownloadLink(this.userData.uid).subscribe((response:any)=>{
-      const downloadUrl=urls.storage+String(this.userData.uid).replace('+','%2B')+'?alt=media&token='+response?.downloadTokens;
-      this.profileForm.value.profile=downloadUrl;
+export class ChatRoomInfoComponent implements OnChanges{
+  @Input() chatRoomInfo:any;
+  @Input() chatId:any;
+  dataBase: any;
+  searchInputDebounce: any;
+  searchResult: any;
+  senderId: any;
+  chatMembersIds: any = [];
+  fetchedChatMembersIds:any=[];
+  newChatMembersIds:any=[];
+  removedMembersIds:any=[];
+  url = urls;
+  groupChatForm!: FormGroup;
+  dataBaseReffrence: any;
+  chatsReff: any;
+  usersChatlistsReff: any;
+  groupProfilePic: any;
+  groupProfileLocalUrl: any;
+  groupProfileStorageUrl: any;
+  errorToggle= false;
+  imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'webp']
+  imageErrorToggle= false;
+  hasImage= false;
+  constructor(private fireBaseService: FirebaseService, private httpRequests: HttpRequestsService) {
+    this.senderId = localStorage.getItem('uid') ?? ''
+    this.dataBase = fireBaseService.getDb();
+    this.dataBaseReffrence = doc(this.dataBase, 'chats', this.senderId);
+    this.groupChatForm = new FormGroup({
+      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      moto: new FormControl(),
     })
-  })
-}
-profileUpdates(){
-  console.log('pushing updates')
-  console.log('profile details',this.profileForm.value,this.userData)
-  this.httpRequests.postUpdates(this.userDataKey,this.isAnonymous,this.profileForm.value).subscribe((response:any)=>{
-    console.log(response)
-  })
-  this.profileForm.disable()
-}
-errorImageHandler(imageEvent:any) {
-  imageEvent.target.src=urls.defaultProfile;
+  }
+  ngOnChanges(){
+    if(this.chatRoomInfo){
+    this.groupProfileLocalUrl=this.chatRoomInfo[2]?.profile;
+    this.chatMembersIds=this.chatRoomInfo[0]?.members;
+    this.fetchedChatMembersIds=this.chatRoomInfo[0]?.members;
+    this.groupChatForm.patchValue(this.chatRoomInfo[1])
+    this.chatsReff = doc(this.dataBase, "chats",this.chatId);
+  }
   }
 
+  searchUser(inputEvent: any) {
+    console.log(inputEvent?.value);
+    clearTimeout(this.searchInputDebounce)
+    this.searchInputDebounce = setTimeout(() => {
+      console.log('Searching ... ');
+      this.searchQuery(Array.from(inputEvent.value))
+    }, 1000)
+  }
+  searchQuery(searchArray: any) {
+    console.log('response');
+    if (searchArray.length > 0) {
+      const search = query(collection(this.dataBase, 'usersChatlists'), where('userName', 'array-contains-any', searchArray));
+      this.searchResult = []
+      getDocs(search).then((response: any) => response.forEach((doc: any) => {
+        if (doc?.id !== this.senderId && !(this.chatMembersIds.includes(doc?.id))) {
+          this.searchResult.push({ id: doc?.id, name: String(doc.data()?.userName).replaceAll(',', '') });
+        }
+      }))
+    }
+    else {
+      this.searchResult = null;
+    }
+  }
+
+  addMember(id: any) {
+    this.chatMembersIds.push(id)
+  }
+  removeMember(index: number) {
+    this.chatMembersIds.splice(index, 1)
+  }
+  createGroup() {
+    //Removed Members
+    const removalList=this.fetchedChatMembersIds.filter((id:any)=>this.removedMembersIds===id);
+    removalList.forEach((member:any)=>{
+      const deleteDocRef=doc(this.dataBase, 'usersChatlists', member, 'chats',this.chatId);
+      deleteDoc(deleteDocRef).then(()=>console.log('Member with id ',member,' has been removed !'))
+    })
+    //removal ends
+      console.log('updating  Group');
+      updateDoc(this.chatsReff,{info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileLocalUrl}]}).then((response: any) => {
+      console.log('Update Done !');
+      const newMembers=this.chatMembersIds.filter((member:any)=>!(removalList.includes(member)));
+      const groupData = this.groupChatForm.value;
+      groupData.reciever = this.chatId;
+      groupData.id = this.chatId;
+      groupData.profile = this.groupProfileLocalUrl ?? '';
+      newMembers.forEach((member: any) => {
+        const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
+        setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Updated Successfully ', member)).catch(() => console.log('Error'))
+      })
+    })
+  }
+  profilePicHandler(fileinputEvent: any) {
+    this.groupProfilePic = fileinputEvent?.srcElement?.files[0];
+    this.groupProfilePic.isImage = this.imageExtensions.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
+    if (this.groupProfilePic.isImage) {
+      const reader = new FileReader();
+      reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
+      reader.onload = (_event) => {
+        this.groupProfileLocalUrl = reader.result;
+        this.hasImage = true;
+      }
+    }
+    else {
+      this.groupProfilePic = null;
+      this.groupProfileLocalUrl = '';
+      this.imageErrorToggler()
+    }
+
+  }
+
+  uploadPicCreateGroup() {
+      const imageId=this.chatId;
+      const app = this.fireBaseService.app()
+      const storage = getStorage(app)
+      const imageref = ref(storage, '/' + imageId)
+      const uploadTask = uploadBytesResumable(imageref, this.groupProfilePic);
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          switch (snapshot.state) {
+            case 'paused':
+              console.log('Upload is paused');
+              break;
+            case 'running':
+              console.log('Upload is running');
+              break;
+          }
+        },
+        (error) => {
+          console.log(error)
+        }
+        ,
+        () => {
+          this.httpRequests.getDownloadLink(imageId).subscribe((response: any) => {
+            const downloadUrl = urls.storage + imageId + '?alt=media&token=' + response?.downloadTokens;
+            this.groupProfilePic = null;
+            this.groupProfileStorageUrl = downloadUrl;
+            //Removed Members
+            const removalList=this.fetchedChatMembersIds.filter((id:any)=>this.removedMembersIds===id);
+            removalList.forEach((member:any)=>{
+              const deleteDocRef=doc(this.dataBase, 'usersChatlists', member, 'chats',this.chatId);
+              deleteDoc(deleteDocRef).then(()=>console.log('Member with id ',member,' has been removed !'))
+            })
+            //removal ends
+              console.log('updating  Group');
+              updateDoc(this.chatsReff,{info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileStorageUrl ?? ''}]}).then((response: any) => {
+              console.log('Update Done !');
+              const newMembers=this.chatMembersIds.filter((member:any)=>!(removalList.includes(member)));
+              const groupData = this.groupChatForm.value;
+              groupData.reciever = this.chatId;
+              groupData.id = this.chatId;
+              groupData.profile = this.groupProfileStorageUrl ?? '';
+              newMembers.forEach((member: any) => {
+                const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
+                setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Updated Successfully ', member)).catch(() => console.log('Error'))
+              })
+            })
+           })
+        })
+
+  }
+  errorToggler() {
+    this.errorToggle = true;
+    setTimeout(() => { this.errorToggle = false }, 1300)
+  }
+  imageErrorToggler() {
+    this.imageErrorToggle = true;
+    setTimeout(() => { this.imageErrorToggle = false }, 1300)
+  }
+  imageAlternate(imageEvent: any) {
+    imageEvent.target.src = urls.defaultProfile;
+  }
 }
