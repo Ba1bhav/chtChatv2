@@ -13,7 +13,7 @@
               <div form-control-row form-center class="border">
                 <br>
                 <div class="chat-nav" style="text-align: center;">
-                  <img class="msg-img" style="height: 100px; border-radius: 70%;width: 100px;" [src]="userData?.profile" (error)="errorImageHandler($event)" (click)="profileUpdate.click()" >
+                  <img class="msg-img" style="height: 100px; border-radius: 70%;width: 100px;" [src]="userData?.profile||profilePicUrl" (error)="errorImageHandler($event)" (click)="profileUpdate.click()" >
                   <input type="file" style="display: none;" #profileUpdate (change)="[getFile($event),profileForm.enable()]">
                 </div>
                 <br>

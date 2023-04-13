@@ -183,12 +183,15 @@ dataBase: any;
     }
 
   createUidDoc(uid:any){
+    const isAnonymous=uid?.startsWith('0x')?true:false;
     const getDocReff=doc(this.dataBase,'usersChatlists',uid)
     getDoc(getDocReff).then((data:any)=>{
       if(!data.exists()){
         console.log('creating New');
+        this.requests.registerUser(isAnonymous).subscribe()
         setDoc(doc(this.dataBase,'usersChatlists',uid),{userName:[]});
         this.router.navigate(['dashboard'])
+
       }
       else{
         console.log('Account Allready exsists !');
@@ -198,7 +201,5 @@ dataBase: any;
 
     })
   }
-
-
 }
 

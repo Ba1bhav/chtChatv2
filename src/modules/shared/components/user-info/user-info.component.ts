@@ -18,6 +18,9 @@ export class UserInfoComponent {
   isAnonymous:boolean=localStorage.getItem('uid')?.startsWith('0x')?true:false;
   profileForm!:FormGroup ;
   dataBase: any;
+  profilePic: any;
+  profilePicUrl:any;
+  imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'webp']
   constructor(private firebase:FirebaseService,private httpRequests:HttpRequestsService){
     this.dataBase=firebase.getDb();
     httpRequests.getUser(this.isAnonymous).subscribe((response:any)=>{
@@ -42,8 +45,23 @@ export class UserInfoComponent {
       profile:new FormControl(this.userData.profile),
     })
   }
-  getFile(event:any){
-  this.file=event.srcElement.files[0]
+  getFile(fileinputEvent:any){
+  this.profilePic=fileinputEvent.srcElement.files[0]
+  this.profilePic = fileinputEvent?.srcElement?.files[0];
+  this.profilePic.isImage = this.imageExtensions.includes(this.profilePic.type.split('/')[1].toLowerCase());
+  if (this.profilePic.isImage) {
+    const reader = new FileReader();
+    reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
+    reader.onload = (_event) => {
+      this.profilePicUrl = reader.result;
+    }
+  }
+  else {
+    this.profilePic = null;
+    this.profilePicUrl = '';
+
+  }
+
   this.updateProfilePic()
   }
   updateProfilePic(){
@@ -55,7 +73,7 @@ export class UserInfoComponent {
       contentType: 'image/jpeg',
     };
 
-    const uploadTask = uploadBytesResumable(imageref, this.file, metadata);
+    const uploadTask = uploadBytesResumable(imageref, this.profilePic, metadata);
 
     uploadTask.on('state_changed',
     (snapshot) => {
