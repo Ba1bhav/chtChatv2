@@ -8,6 +8,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import { CreateGroupChatComponent } from './components/create-group-chat/create-group-chat.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
+import { HttpErrorPageComponent } from './components/http-error-page/http-error-page.component';
 @NgModule({
   declarations: [
     ChatRoomInfoComponent,
@@ -15,6 +16,7 @@ import { UserInfoComponent } from './components/user-info/user-info.component';
     SearchUserComponent,
     CreateGroupChatComponent,
     UserInfoComponent,
+    HttpErrorPageComponent,
   ],
   imports: [
     CommonModule,

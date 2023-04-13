@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { addDoc, collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -85,10 +85,13 @@ export class CreateGroupChatComponent {
       groupData.reciever = this.chatId;
       groupData.id = this.chatId;
       groupData.profile = this.groupProfileStorageUrl ?? '';
-      this.chatMembersIds.forEach((member: any) => {
+      const chatMembersIds=this.chatMembersIds
+      chatMembersIds.forEach((member: any) => {
         const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
         setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Added Successfully ', member)).catch(() => console.log('Error'))
+
       })
+
     })
   }
   profilePicHandler(fileinputEvent: any) {
@@ -113,7 +116,7 @@ export class CreateGroupChatComponent {
   uploadPicCreateGroup() {
     this.chatMembersIds.push(this.senderId)
     console.log('creating new Group with profile pic');
-    addDoc(this.chatsReff,{ info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileStorageUrl ?? ''}],messages: [] }).then((response: any) => {
+    addDoc(this.chatsReff,{ info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:''}],messages: [] }).then((response: any) => {
       console.log(response?.id);
       this.chatId = response.id
       const imageId = response.id;
@@ -147,9 +150,10 @@ export class CreateGroupChatComponent {
             groupData.reciever = this.chatId;
             groupData.id = this.chatId;
             groupData.profile = this.groupProfileStorageUrl ?? '';
-            this.chatMembersIds.forEach((member: any) => {
+            this.chatMembersIds.forEach((member: any,) => {
               const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
               setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Added Successfully ', member)).catch(() => console.log('Error'))
+
             })
           })
         })
@@ -165,5 +169,12 @@ export class CreateGroupChatComponent {
   }
   imageAlternate(imageEvent: any) {
     imageEvent.target.src = urls.defaultProfile;
+  }
+  resetData(){
+    this.chatMembers=[];
+    this.groupChatForm.reset();
+    this.chatMembersIds=null;
+    this.groupProfilePic=null;
+    this.groupProfileLocalUrl=null;
   }
 }

@@ -8,11 +8,11 @@
       <header class="msger-header">
         <div class="msger-header-title" style="align-self: center;">
            <div class="chat-nav">
-            <img class="msg-img" style="height: 50px; border-radius: 70%;width: 50px;" [src]="userData?.id" (error)="errorImageHandler($event)" >
+            <img class="msg-img" style="height: 50px; border-radius: 70%;width: 50px;" [src]="chatProfile" (error)="errorImageHandler($event)" >
           </div>
         </div>
         <!-- <div  style="align-self: center;color:black;font-size:30px;">chat room name</div> -->
-        <div  style="align-self: center;color:black;font-size:30px;">Start Chatting</div>
+        <div  style="align-self: center;color:black;font-size:30px;">{{chatName}}</div>
         <div class="msger-header-options">
 
             <button style="background-color: transparent;border: none; padding: 15px;" mat-icon-button [matMenuTriggerFor]="menu" >

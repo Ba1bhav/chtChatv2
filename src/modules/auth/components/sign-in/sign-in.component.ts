@@ -12,13 +12,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./sign-in.component.scss']
 })
 export class SignInComponent implements OnInit{
-  isHuman:boolean=false;
-  otpInputToggle:boolean=false;
+  isHuman=false;
+  otpInputToggle=false;
   windowRef:any;
   App:any;
   loginForm:FormGroup;
-  errorToggle:boolean=false;
-  otp:string='';
+  errorToggle=false;
+  otp='';
   otpInputConfig={
     length:6,
     inputStyles: {
@@ -29,7 +29,7 @@ export class SignInComponent implements OnInit{
 }
 
 //metamask
-isMetaMaskPresent:boolean=false;
+isMetaMaskPresent=false;
 etherium:any;
 dataBase: any;
 //metamask
@@ -64,9 +64,6 @@ dataBase: any;
     console.log('Some Error Encountered !');
 
   }
-  // this.requests.getUser(true).subscribe(
-  //   (response:any)=>console.log('redirect',response),
-  //   ()=>{this.requests.registerUser(true).subscribe((response:any)=>console.log('mask',response))})
   }
 
    logIn(){

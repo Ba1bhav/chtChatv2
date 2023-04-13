@@ -21,6 +21,7 @@ attachmentFileUrl:any;
 imageExtensions=['jpg','jpeg','gif','png','webp'];
 @Input() chatId:any;
 @Input() chatName:any;
+@Input() chatProfile:any;
 matmenuwidth={
   'min-width':'200px'
   }

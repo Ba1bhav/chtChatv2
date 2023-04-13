@@ -2,7 +2,8 @@ import { Component, OnInit} from '@angular/core';
 import { urls } from 'src/commons/constants';
 import { Router } from '@angular/router';
 import { FirebaseService } from 'src/services/shared/firebase.service';
-import { getDoc,collection,doc, where, query, getDocs, addDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { collection,doc, where, query, getDocs, addDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 
 @Component({
   selector: 'app-search-user',
@@ -21,17 +22,21 @@ export class SearchUserComponent implements OnInit{
   searchInputDebounce:any;
   searchResult:any=[];
   userschatReff:any;
-  chatName:any='some name here'
   chatId:any;
+  chatName:any;
+  chatProfile:any;
   senderId=localStorage.getItem('uid')??'';
   switchReponse: any='0';
   chatlistListener:any;
-constructor(private router:Router,private fireBaseService:FirebaseService){
+  isAnonymous:boolean=localStorage.getItem('uid')?.startsWith('0x')?true:false;
+constructor(private router:Router,private fireBaseService:FirebaseService,private httpRequests:HttpRequestsService){
   this.dataBase=fireBaseService.getDb();
   this.dataBaseReffrence=doc(this.dataBase,'chats',this.senderId);
   this.chatsReff=collection(this.dataBase, "chats");
   this.usersChatlistsReff=collection(this.dataBase, 'usersChatlists',localStorage.getItem('uid')??'','chats');
-
+  httpRequests.getUser(this.isAnonymous).subscribe((response:any)=>{
+    this.userData=Object.values(response)[0];
+    this.userData.id=this.isAnonymous?parseInt(this.userData.uid,16).toString():this.userData.id;})
 }
 ngOnInit() {
   this.chatlistListener = onSnapshot(collection(this.dataBase, 'usersChatlists',localStorage.getItem('uid')??'','chats'), (collection) => {
@@ -75,7 +80,6 @@ searchQuery(searchArray:any){
 }
 
 createChat(uid:any){
-
     this.userschatReff=collection(this.dataBase,'usersChatlists',this.senderId,'chats');
     const idArray:any=[]
     const messagIdArray:any=[]
