@@ -67,3 +67,13 @@
     text-align: center;
     transform: rotate(30deg);
   }
+.selected{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color:#eee;
+  justify-content:space-between;
+  border-radius: 35px;
+  border:solid;
+  border-color: rgb(50, 9, 231);
+}

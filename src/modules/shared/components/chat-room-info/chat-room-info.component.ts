@@ -1,12 +1,11 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { addDoc, collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { Component, Input, OnChanges } from '@angular/core';
+import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
-// {uid:,id:,phone_number,profile,name}
-//
+
 @Component({
   selector: 'app-chat-room-info',
   templateUrl: './chat-room-info.component.html',

@@ -25,8 +25,7 @@ export class UserInfoComponent {
     this.dataBase=firebase.getDb();
     httpRequests.getUser(this.isAnonymous).subscribe((response:any)=>{
       this.userDataKey=Object.keys(response)
-      this.userData=Object.values(response)[0];
-      this.userData.id=this.isAnonymous?parseInt(this.userData.uid,16).toString():this.userData.id;
+      this.userData=Object.values(response)[0]
       this.setProfileForm()
       this.profileForm.disable()
 

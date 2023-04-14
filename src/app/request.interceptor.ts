@@ -12,8 +12,13 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
-  constructor(private router:Router){}
+  uidHandler:any;
+  constructor(private router:Router){
+  }
+
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    console.log('Request');
+
     return next.handle(request).pipe(catchError((error:any)=>{
       if(error instanceof HttpErrorResponse && error.status==401){
         localStorage.clear();

@@ -27,9 +27,9 @@
               <mat-icon>clear</mat-icon>
               <span>close info</span>
             </button>
-            <button mat-menu-item disabled  style="width: 150px;" >
-              <mat-icon>notifications_off</mat-icon>
-              <span>Disable</span>
+            <button mat-menu-item  style="width: 150px;" (click)="shareProfile()">
+              <mat-icon>share</mat-icon>
+              <span>Share Profile</span>
             </button>
             <button mat-menu-item style="width: 150px;" (click)="leaveChat()">
               <mat-icon>exit_to_app</mat-icon>
@@ -67,42 +67,63 @@
                         <div  class="msg-text" *ngIf="message?.type===1">
                           <img style="width: 200px;height: 200px;" [src]='message?.message'>
                         </div>
-                        <div type="button" (click)="deleteMessage(index)"><mat-icon>delete</mat-icon></div>
+                        <div  class="msg-text" *ngIf="message?.type===2">
+                          <audio controls [src]='message?.message'></audio>
+                        </div>
+                        <div  class="msg-text" *ngIf="message?.type===3">
+                          <video style="width: 200px;height: 200px;" controls [src]='message?.message'></video>
+                        </div>
+                        <div  class="msg-text" *ngIf="message?.type===4">
+                          <div style="width: 200px;height: 100px;background-color: lightgray;border-radius: 10px;">
+                          <div style="padding: 5px;">This Type of File Can't Be Shown Here</div>
+                          <div type="button" style="text-align: center;width: 200;height: 50px;" (click)="window.open(message?.message,'_blank')"><mat-icon class="download_icon">cloud_download</mat-icon></div>
+                          </div>
+                        </div>
+                        <div>
+                        <div *ngIf="message?.senderId===senderId" style="float: left;"><mat-icon *ngIf="index>=seenMessages" style="color: rgb(184, 184, 184);">done</mat-icon><mat-icon *ngIf="index<seenMessages" style="color: rgb(5, 83, 226);">done_all</mat-icon></div>
+                        <div style="float: right;" type="button" (click)="deleteMessage(index)"><mat-icon>delete</mat-icon></div>
+                      </div>
                       </div>
                     </div>
                   </ng-container>
+                  <ng-container *ngIf="attachmentFile">
+                    <div style="background-color:transparent;">
+                    <table class="table table-stripped">
+                      <thead>
+                        <th>File Name</th>
+                        <th>File</th>
+                        <th>Action</th>
+                      </thead>
+                      <tr>
+                        <td>{{attachmentFile?.name}}</td>
+                        <td *ngIf="attachmentFile.isImage"><img style="max-width: 200px;max-height: 200px;" [src]="attachmentFileUrl"></td>
+                        <td *ngIf="!attachmentFile.isImage">{{attachmentFile?.type}}</td>
+                        <td type="button" style="color: red;" (click)="attachmentFile=null">X</td>
+                      </tr>
+                      <tr *ngIf="attachmentUploadProgress>0">
+                        <div style="display: flex;flex-direction: row;border-width: thin;border: solid;border-color: rgb(29, 29, 29);">
+                          <div style="background-image: linear-gradient(180deg,lightgreen,rgb(81, 233, 81),rgb(32, 192, 32),rgb(21, 209, 21),rgb(0, 163, 0));" [style.width]="attachmentUploadProgress+'%'">
+                          </div></div></tr>
+                    </table>
+                      </div ></ng-container>
               </main>
               </ng-container>
           </ng-container>
           </section>
         </tbody>
-        <tfoot style="height: min-content;">
-          <ng-container *ngIf="attachmentFile">
-            <div style="background-color: white;">
-            <table class="table table-stripped">
-              <thead>
-                <th>File Name</th>
-                <th>File</th>
-                <th>Action</th>
-              </thead>
-              <tr>
-                <td>{{attachmentFile?.name}}</td>
-                <td *ngIf="attachmentFile.isImage"><img style="max-width: 200px;max-height: 200px;" [src]="attachmentFileUrl"></td>
-                <td *ngIf="!attachmentFile.isImage">{{attachmentFile?.type}}</td>
-                <td type="button" style="color: red;" (click)="attachmentFile=null">X</td>
-              </tr>
-            </table>
-              </div ></ng-container>
+        <tfoot style="height: min-content;" >
               <ng-container >
                 <div class="msger-inputarea" >
+                  <form (submit)="attachmentFile?attchmentUpload():sendMessage(message,0)" style="display: flex;width:100%;">
                 <input type="file" style="display: none;outline: none; color: transparent;border: none;" #fileUpload  matTooltip="Info about the action"
                 matTooltipPosition="top" (change)="fileAttach($event)" >
                 <button type="button" (click)="fileUpload.click()" style="padding:3px;background-color: rgb(0, 196, 65);margin-right: 10px;" >
                     <mat-icon style="color: white;padding: 5px;">attach_file</mat-icon>
                 </button>
-                <input type="text" #message class="msger-input" placeholder="Enter your message...">
+                <input type="text" #message class="msger-input" placeholder="Enter your message..." >
                 <button *ngIf="!attachmentFile" type="button" class="msger-send-btn" (click)="sendMessage(message,0)">Send</button>
                 <button *ngIf="attachmentFile" type="button" class="msger-send-btn" (click)="attchmentUpload()">Send</button>
+              </form>
               </div>
               </ng-container>
         </tfoot>

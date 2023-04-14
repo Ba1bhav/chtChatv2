@@ -13,7 +13,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item disabled>
                   <mat-icon>dialpad</mat-icon>
                   <span>Redial</span>
                 </button>
@@ -43,7 +43,7 @@
               <div>
                 <div style="text-align: center;width: 100%;">search Result</div>
                 <ng-container *ngFor="let chat of searchResult">
-                  <div type="button" class="chatList-chatButton" (click)="createChat(chat?.id)">
+                  <div type="button" class="chatList-chatButton" [ngClass]="recieverId===chat?.id?'selected':''" (click)="[createChat(chat?.id),chatName=chat?.name||'Private',chatProfile=chat?.profile,recieverId=chat?.id]">
                     <div style="align-self: center;"><img class="msg-img"
                         style="height: 50px; border-radius: 70%;width: 50px;" [src]="userData?.id"
                         (error)="errorImageHandler($event)">
@@ -60,8 +60,8 @@
             <td>
               <div>
                 <div style="text-align: center;width: 100%;">Chats</div>
-                <ng-container *ngFor="let chat of chatsList">
-                  <div type="button" class="chatList-chatButton" (click)="[createChat(chat?.reciever),chatName=chat?.name||chat?.reciever,chatProfile=chat?.profile]">
+                <ng-container *ngFor="let chat of chatsList" >
+                  <div type="button" class="chatList-chatButton" [ngClass]="recieverId===chat?.reciever?'selected':''" (click)="[createChat(chat?.reciever),chatName=chat?.name||'Private',chatProfile=chat?.profile,recieverId=chat?.reciever]">
                     <div style="align-self: center;"><img class="msg-img"
                         style="height: 50px; border-radius: 70%;width: 50px;" [src]="chat?.profile"
                         (error)="errorImageHandler($event)">
@@ -95,7 +95,7 @@
       <ng-container [ngSwitch]="switchReponse">
         <app-user-info  *ngSwitchCase="'2'"></app-user-info>
         <app-create-group-chat *ngSwitchCase="'1'"></app-create-group-chat>
-        <app-chat *ngSwitchCase="'0'" [chatId]="chatId" [chatName]="chatName" [chatProfile]="chatProfile"></app-chat>
+        <app-chat *ngSwitchCase="'0'" [chatId]="chatId" [chatName]="chatName" [chatProfile]="chatProfile" [recieverId]="recieverId"></app-chat>
       </ng-container>
     </td>
     <!-- <td style="width: 70%;background-image: url({{urls.chatsBackground}});"><app-chat-room-info style="display: block;"></app-chat-room-info></td> -->

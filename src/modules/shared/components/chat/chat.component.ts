@@ -1,7 +1,7 @@
 import { Component,AfterViewChecked,ChangeDetectorRef, AfterViewInit, Input, OnChanges} from '@angular/core';
 import { urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
-import{doc,arrayUnion,updateDoc, onSnapshot, deleteDoc} from'firebase/firestore'
+import{doc,arrayUnion,updateDoc, onSnapshot, deleteDoc, collection, setDoc} from'firebase/firestore'
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 @Component({
@@ -18,18 +18,26 @@ senderId=localStorage.getItem('uid');
 unsubscribeListener:any;
 attachmentFile:any;
 attachmentFileUrl:any;
+attachmentUploadProgress=0;
 imageExtensions=['jpg','jpeg','gif','png','webp'];
+audioExtensions=['aac','flac','ogg','wma','mp3','wav','mpeg'];
+videoExtensions=['x-ms-wmv','x-msvideo','quicktime','3gpp','MP2T','x-mpegURL','mp4','x-flv']
+seenMessages!:number;
 @Input() chatId:any;
 @Input() chatName:any;
 @Input() chatProfile:any;
+@Input() recieverId:any;
 matmenuwidth={
   'min-width':'200px'
   }
 
 chatRoomInfo: any;
 switchResponse='0';
+chatsReff: any;
+window=window;
 constructor(private httpRequests:HttpRequestsService,private fireBaseService:FirebaseService,private changeDetector:ChangeDetectorRef){
   this.dataBase=fireBaseService.getDb();
+
 }
 
 ngAfterViewChecked() {
@@ -45,8 +53,19 @@ ngOnChanges(){
     this.unsubscribeListener = onSnapshot(doc(this.dataBase, "chats",this.chatId), (doc) => {
       console.log(doc?.data(),this.chatId);
 
-    this.chatRoomInfo=doc?.data()?.['info']
-    this.messages=doc?.data()?.['messages']})
+    this.chatRoomInfo=doc?.data()?.['info'];
+    this.messages=doc?.data()?.['messages'];
+    this.seenMessages=doc?.data()?.['seenMessages']
+
+      if(this.messages){
+        if(this.messages[this.messages?.length-1]?.senderId!==this.senderId){
+          updateDoc(this.dataBaseReffrence, {seenMessages:this.messages?.length})
+          .then((response:any)=>{console.log('Message Seen');})
+
+        // console.log('check');
+
+      }}})
+  // })
   }
   this.changeDetector.detectChanges()
 }
@@ -55,21 +74,27 @@ errorImageHandler(imageEvent:any) {
   imageEvent.target.src=urls.defaultProfile;
   }
 sendMessage(message:any,type:number){
-  if(type==1){
-    const messageData=message;
+ if(message){
+    if(type===1||type==2||type==3||type==4){
+      const messageData=message;
+        updateDoc(this.dataBaseReffrence, {messages:arrayUnion({message:messageData,senderId:this.senderId,type:type,date:String(new Date())})}).then((response:any)=>{console.log('Message Send Successfully');
+      })
+    }
+    else{
+    if(message?.value){
+    const messageData=message.value;
     updateDoc(this.dataBaseReffrence, {messages:arrayUnion({message:messageData,senderId:this.senderId,type:type,date:String(new Date())})}).then((response:any)=>{console.log('Message Send Successfully');
-  })
+    })
+    message.value='';
   }
-  else{
-  const messageData=message.value;
-  updateDoc(this.dataBaseReffrence, {messages:arrayUnion({message:messageData,senderId:this.senderId,type:type,date:String(new Date())})}).then((response:any)=>{console.log('Message Send Successfully');
-  })
-  message.value='';
+  }
 }
 }
 fileAttach(fileEvent:any){
 this.attachmentFile=fileEvent?.srcElement?.files[0];
 this.attachmentFile.isImage=this.imageExtensions.includes(this.attachmentFile.type.split('/')[1].toLowerCase())
+this.attachmentFile.isAudio=this.audioExtensions.includes(this.attachmentFile.type.split('/')[1].toLowerCase())
+this.attachmentFile.isVideo=this.videoExtensions.includes(this.attachmentFile.type.split('/')[1].toLowerCase())
 const reader = new FileReader();
 reader.readAsDataURL(fileEvent?.srcElement?.files[0]);
 reader.onload = (_event) => {
@@ -84,26 +109,43 @@ attchmentUpload(){
     const uploadTask = uploadBytesResumable(imageref, this.attachmentFile);
     uploadTask.on('state_changed',
     (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-      switch (snapshot.state) {
-        case 'paused':
-          console.log('Upload is paused');
-          break;
-        case 'running':
-          console.log('Upload is running');
-          break;
-      }
+      this.attachmentUploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + this.attachmentUploadProgress + '% done');
+      // switch (snapshot.state) {
+      //   case 'paused':
+      //     console.log('Upload is paused');
+      //     break;
+      //   case 'running':
+      //     console.log('Upload is running');
+      //     break;
+      // }
     },
     (error) => {
       console.log(error)
       }
     ,
     () => {
+
+
       this.httpRequests.getDownloadLink(this.attachmentFile?.name).subscribe((response:any)=>{
-        const downloadUrl=urls.storage+this.attachmentFile?.name+'?alt=media&token='+response?.downloadTokens;
-        this.attachmentFile=null;
-        this.sendMessage(downloadUrl,1)
+        const downloadUrl=urls.storage+encodeURI(this.attachmentFile?.name)+'?alt=media&token='+response?.downloadTokens;
+        console.log('Getting Url',downloadUrl);
+        if(this.attachmentFile.isImage){
+          this.sendMessage(downloadUrl,1);
+          this.attachmentFile=null;
+        }
+        else if(this.attachmentFile.isAudio){
+          this.sendMessage(downloadUrl,2);
+          this.attachmentFile=null;
+        }
+        else if(this.attachmentFile.isVideo){
+          this.sendMessage(downloadUrl,3);
+          this.attachmentFile=null;
+        }
+        else{
+          this.sendMessage(downloadUrl,4);
+          this.attachmentFile=null;
+        }
       })
     })
 }
@@ -120,5 +162,18 @@ attchmentUpload(){
      this.chatId=null;
 
   }
+  shareProfile(){
+    const uId=localStorage.getItem('uid');
+    const isAnonymous=uId?.startsWith('0x')?true:false;
+    if(uId&&this.recieverId){
+    this.httpRequests.getUser(isAnonymous).subscribe((userDetails:any)=>{
+      const data:any=Object.values(userDetails)[0]||'';
+      data.id=this.chatId;
+      updateDoc(doc(this.dataBase,'usersChatlists',this.recieverId,'chats',uId||''),data).then((response:any)=>{
+        console.log(response||'Success-Reciever')
 
+    })})
+  }
+  //else toast err
+  }
 }

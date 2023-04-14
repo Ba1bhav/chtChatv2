@@ -2,7 +2,7 @@ import { Component, OnInit} from '@angular/core';
 import { urls } from 'src/commons/constants';
 import { Router } from '@angular/router';
 import { FirebaseService } from 'src/services/shared/firebase.service';
-import { collection,doc, where, query, getDocs, addDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { collection,doc, where, query, getDocs, addDoc, setDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 
 @Component({
@@ -28,6 +28,7 @@ export class SearchUserComponent implements OnInit{
   senderId=localStorage.getItem('uid')??'';
   switchReponse: any='0';
   chatlistListener:any;
+  recieverId:any;
   isAnonymous:boolean=localStorage.getItem('uid')?.startsWith('0x')?true:false;
 constructor(private router:Router,private fireBaseService:FirebaseService,private httpRequests:HttpRequestsService){
   this.dataBase=fireBaseService.getDb();
@@ -118,4 +119,5 @@ createChat(uid:any){
   createGroup(){
     this.switchReponse='1';
   }
+
 }

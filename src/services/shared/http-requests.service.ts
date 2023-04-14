@@ -19,6 +19,7 @@ export class HttpRequestsService {
     return this.request.get(urls.realtimeDb+(anonymous?urls.metaMaskUrl:urls.phoneUrl)+uid+'.json'+(anonymous?'':'?auth='+token))
   }
   getDownloadLink(fileName:any){
+    fileName=encodeURI(fileName)
     const uri=`${urls.storage}${fileName}?id=true`.replace('+','%2B')
     return this.request.get(uri)
   }

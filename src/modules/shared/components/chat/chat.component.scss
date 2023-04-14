@@ -175,7 +175,8 @@ html {
   background: #eee;
 }
 .msger-inputarea * {
-  padding: 10px;
+  // padding: 10px;
+  // padding-bottom: unset;
   border: none;
   border-radius: 3px;
   font-size: 1em;
@@ -192,6 +193,7 @@ html {
   font-weight: bold;
   cursor: pointer;
   transition: background 0.23s;
+  width: 50px;
 }
 .msger-send-btn:hover {
   background: rgb(0, 180, 50);
@@ -210,4 +212,33 @@ min-width :200px,!important;
   margin-top: 65px;
   background-color: #263358;
 }
+.container {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin: 30px;
+}
 
+.box {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.7;
+  background: #0057e3;
+}
+
+.overlay {
+  z-index: 9;
+  margin: 30px;
+  background: #009938;
+}
+.download_icon:hover{
+text-shadow:0px 0px 3px  #4406f0;
+}
+.download_icon{
+  width:200px;
+  height: 50px;
+  font-size: 40px;
+  }
