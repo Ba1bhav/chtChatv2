@@ -9,6 +9,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { CreateGroupChatComponent } from './components/create-group-chat/create-group-chat.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { HttpErrorPageComponent } from './components/http-error-page/http-error-page.component';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
 @NgModule({
   declarations: [
     ChatRoomInfoComponent,
@@ -24,6 +25,7 @@ import { HttpErrorPageComponent } from './components/http-error-page/http-error-
     ReactiveFormsModule,
     MatMenuModule,
     MatIconModule,
+    PickerModule,
   ]
 })
 export class SharedModule { }

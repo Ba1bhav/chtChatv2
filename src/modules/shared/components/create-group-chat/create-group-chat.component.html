@@ -20,7 +20,7 @@
           <br>
           <div class="center">
             <input type="file" style="display: none;" #groupProfile (change)="profilePicHandler($event)">
-            <img style="height: 65px; border-radius: 70%;width: 65px;" [src]="groupProfileLocalUrl" (error)="imageAlternate($event)" (click)="groupProfile.click()">
+            <img style="height: 65px; border-radius: 70%;width: 65px;" [src]="groupProfileLocalUrl" [style.opacity]="uploadProgress/100" (error)="imageAlternate($event)" (click)="groupProfile.click()">
           </div>
           <br>
           <div class="center">
@@ -75,7 +75,7 @@
             </table>
           </div>
           <!-- Members List -->
-          <div class="center" *ngIf="!searchResult&&chatMembers.length>0">Members {{chatMembersIds?.length+1}}</div>
+          <div class="center" *ngIf="!searchResult&&chatMembers.length>0">Members {{chatMembersIds?.length}}</div>
           <div class="center" *ngIf="!searchResult&&chatMembers.length>0">
             <table style="width: 350px;">
               <thead>

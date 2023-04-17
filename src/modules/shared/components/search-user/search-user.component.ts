@@ -1,8 +1,8 @@
-import { Component, OnInit,ChangeDetectorRef,AfterViewInit,AfterViewChecked} from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef,AfterContentInit} from '@angular/core';
 import { urls } from 'src/commons/constants';
 import { Router } from '@angular/router';
 import { FirebaseService } from 'src/services/shared/firebase.service';
-import { collection,doc, where, query, getDocs, addDoc, setDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { collection,doc, where, query, getDocs, addDoc, setDoc, onSnapshot} from 'firebase/firestore';
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import { LoaderService } from 'src/services/shared/loader.service';
 import { ToastrService } from 'src/services/shared/toastr.service';
@@ -12,7 +12,7 @@ import { ToastrService } from 'src/services/shared/toastr.service';
   templateUrl: './search-user.component.html',
   styleUrls: ['./search-user.component.scss']
 })
-export class SearchUserComponent implements OnInit,AfterViewInit,AfterViewChecked{
+export class SearchUserComponent implements OnInit,AfterContentInit{
   urls=urls
   dataBase:any;
   dataBaseReffrence:any;
@@ -53,13 +53,16 @@ constructor(private router:Router,
     this.userData.id=this.isAnonymous?parseInt(this.userData.uid,16).toString():this.userData.id;})
 }
 
+
 ngOnInit() {
   this.chatlistListener = onSnapshot(collection(this.dataBase, 'usersChatlists',localStorage.getItem('uid')??'','chats'), (collection) => {
     this.chatsList=[];
+    this.loader.setLoadingStatus(false);
     collection.docs.forEach((result:any,index:number,array:any)=>{
+      this.loader.setLoadingStatus(true)
       this.chatsList.push(result.data());
       // console.log(index+' == '+array.length ,index==array.length-1);
-      
+
       if(index==array.length-1){
         this.loader.setLoadingStatus(false)
       }
@@ -67,12 +70,10 @@ ngOnInit() {
     })})
 
 }
-ngAfterViewInit() {
+ngAfterContentInit(){
   this.changeDetector.detectChanges()
 }
-ngAfterViewChecked() {
-  this.changeDetector.detectChanges()
-}
+
 errorImageHandler(imageEvent:any) {
     imageEvent.target.src=urls.defaultProfile;
     }

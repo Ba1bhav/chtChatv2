@@ -15,9 +15,6 @@ export class FirebaseService {
     appId: "1:1093034790456:web:331d0a3060bc9bfef320cd",
     measurementId: "G-FTQV32SJFD"
   };
-  constructor() {
-
-   }
    app=()=>initializeApp(this.firebaseConfig);
 
    getDb(){

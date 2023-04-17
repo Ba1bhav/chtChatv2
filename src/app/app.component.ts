@@ -10,24 +10,24 @@ import Swal from 'sweetalert2';
 })
 export class AppComponent  {
   uidHandler: string | null;
-  showLoader:any;
-  banner:string=`
-  dP""b8  88  88 88 888888  dP""b8  88  88    db    888888 Yb    dP oP"Yb. 
-  dP      88  88 88   88   dP       88  88   dPYb     88    Yb  dP  "' dP' 
-  Yb      888888 88   88   Yb       888888  dP__Yb    88     YbdP     dP'  
-   Ybood  88  88 88   88    Ybood   88  88 dP""""Yb   88      YP    .d8888 
-                                                                                                         
-  `
+  showLoader=false;
+  banner=`
+  dP""b8  88  88 88 888888  dP""b8  88  88    db    888888 Yb    dP oP"Yb.
+  dP      88  88 88   88   dP       88  88   dPYb     88    Yb  dP  "' dP'
+  Yb      888888 88   88   Yb       888888  dP__Yb    88     YbdP     dP'
+   Ybood  88  88 88   88    Ybood   88  88 dP""""Yb   88      YP    .d8888 `
   constructor(private router:Router,private toastr:ToastrService,private loader:LoaderService){
     console.log(this.banner)
-    console.log=()=>null;
+    // console.log=()=>null;
+    // console.error=()=>null;
+    // console.log=()=>null;
     this.uidHandler=localStorage.getItem('uid');
     this.loader.getLoadingStatus().subscribe((response:any)=>{
       this.showLoader=response?.loading;
       // console.log(response);
-  
+
     })
-    
+
     this.toastr.getNotification().subscribe((response:any)=>{
       const Toast = Swal.mixin({
         toast: true,
@@ -42,7 +42,7 @@ export class AppComponent  {
       })
       if(response?.message){
         // console.log(response?.message);
-        
+
         Toast.fire({
           icon: 'success',
           title: response?.message
@@ -65,7 +65,7 @@ export class AppComponent  {
     }
   }
 
-  
+
 
 
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getAuth, RecaptchaVerifier,signInWithPhoneNumber} from "firebase/auth";
-import { LoadBundleTask, doc, getDoc, setDoc } from 'firebase/firestore';
+import {  doc, getDoc, setDoc } from 'firebase/firestore';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import { WindowService } from 'src/services/shared/window.service';
@@ -121,14 +121,15 @@ dataBase: any;
    }
 
  verifyOtp(code:string)
-      { code=this.otp
+      { this.loader.setLoadingStatus(true)
+        code=this.otp
         this.windowRef.confirmationResult.confirm(code).then((result:any) => {
         const user = result.user;
         // console.log(result);
-        this.loader.setLoadingStatus(true)
+
         localStorage.setItem('uid',result?.user?.uid)
         localStorage.setItem('idToken',result?._tokenResponse?.idToken);
-        
+
         this.createUidDoc(result?.user?.uid)
         // console.log(result)
       }).catch((error:any) => {
@@ -215,7 +216,7 @@ dataBase: any;
         // console.log('Account Allready exsists !');
         this.loader.setLoadingStatus(false)
         this.router.navigate(['dashboard'])
-        
+
         this.toastr.setToastMessage('Sign In Success')
       }
 

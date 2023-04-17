@@ -18,12 +18,12 @@ export class HttpRequestsService {
     const token=localStorage.getItem("idToken")
     return this.request.get(urls.realtimeDb+(anonymous?urls.metaMaskUrl:urls.phoneUrl)+uid+'.json'+(anonymous?'':'?auth='+token))
   }
-  getDownloadLink(fileName:any){
+  getDownloadLink(fileName:string){
     fileName=encodeURI(fileName)
     const uri=`${urls.storage}${fileName}?id=true`.replace('+','%2B')
     return this.request.get(uri)
   }
-  postUpdates(fireBaseId:any,isAnonymous:any,data:any){
+  postUpdates(fireBaseId:string,isAnonymous:boolean,data:any){
     const uid=localStorage.getItem('uid')
     const token=localStorage.getItem("idToken")
     return this.request.put(urls.realtimeDb+(isAnonymous?urls.metaMaskUrl:urls.phoneUrl)+uid+'/'+fireBaseId+'.json'+(isAnonymous?'':'?auth='+token),data)

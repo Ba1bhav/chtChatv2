@@ -4,9 +4,9 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ToastrService {
-  private toastr=new BehaviorSubject<any>({message:'Welcome To ChitChatV2'})
+  private toastr=new BehaviorSubject<object>({message:'Welcome To ChitChatV2'})
   private notify=this.toastr.asObservable()
-  setToastMessage(message:String){
+  setToastMessage(message:string){
     return this.toastr.next({message:message})
   }
   getNotification(){

@@ -1,11 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { addDoc, collection, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { Component} from '@angular/core';
+import { addDoc, collection, doc, getDocs, query, setDoc,  where } from 'firebase/firestore';
 import { urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { HttpRequestsService } from 'src/services/shared/http-requests.service';
 import { Router } from '@angular/router';
+import { ToastrService } from 'src/services/shared/toastr.service';
 @Component({
   selector: 'app-create-group-chat',
   templateUrl: './create-group-chat.component.html',
@@ -32,7 +33,13 @@ export class CreateGroupChatComponent {
   imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'webp']
   imageErrorToggle= false;
   hasImage= false;
-  constructor(private router:Router,private fireBaseService: FirebaseService, private httpRequests: HttpRequestsService) {
+  uploadProgress=100;
+  constructor(
+    private router:Router,
+    private fireBaseService: FirebaseService,
+    private httpRequests: HttpRequestsService,
+    private toastr:ToastrService,
+     ) {
     this.senderId = localStorage.getItem('uid') ?? ''
     this.dataBase = fireBaseService.getDb();
     this.dataBaseReffrence = doc(this.dataBase, 'chats', this.senderId);
@@ -47,12 +54,12 @@ export class CreateGroupChatComponent {
     console.log(inputEvent?.value);
     clearTimeout(this.searchInputDebounce)
     this.searchInputDebounce = setTimeout(() => {
-      console.log('Searching ... ');
+      // console.log('Searching ... ');
       this.searchQuery(Array.from(inputEvent.value))
     }, 1000)
   }
   searchQuery(searchArray: any) {
-    console.log('response');
+    // console.log('response');
     if (searchArray.length > 0) {
       const search = query(collection(this.dataBase, 'usersChatlists'), where('userName', 'array-contains-any', searchArray));
       this.searchResult = []
@@ -89,7 +96,7 @@ export class CreateGroupChatComponent {
       const chatMembersIds=this.chatMembersIds
       chatMembersIds.forEach((member: any,index:number,array:any) => {
         const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
-        setDoc(doc(reciever, this.chatId), groupData).then((response: any) => {
+        setDoc(doc(reciever, this.chatId), groupData).then(() => {
           // console.log(response || 'Member Added Successfully ', member)
           if(index===array.length-1)
           {
@@ -107,7 +114,7 @@ export class CreateGroupChatComponent {
     if (this.groupProfilePic.isImage) {
       const reader = new FileReader();
       reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
-      reader.onload = (_event) => {
+      reader.onload = () => {
         this.groupProfileLocalUrl = reader.result;
         this.hasImage = true;
       }
@@ -122,9 +129,9 @@ export class CreateGroupChatComponent {
 
   uploadPicCreateGroup() {
     this.chatMembersIds.push(this.senderId)
-    console.log('creating new Group with profile pic');
+    // console.log('creating new Group with profile pic');
     addDoc(this.chatsReff,{ info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:''}],messages: [] }).then((response: any) => {
-      console.log(response?.id);
+      // console.log(response?.id);
       this.chatId = response.id
       const imageId = response.id;
       const app = this.fireBaseService.app()
@@ -133,8 +140,8 @@ export class CreateGroupChatComponent {
       const uploadTask = uploadBytesResumable(imageref, this.groupProfilePic);
       uploadTask.on('state_changed',
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
+          this.uploadProgress= (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          // console.log('Upload is ' + progress + '% done');
         },
         (error) => {
           console.log(error)
@@ -178,5 +185,6 @@ export class CreateGroupChatComponent {
     this.chatMembersIds=[];
     this.groupProfilePic='';
     this.groupProfileLocalUrl='';
+    this.toastr.setToastMessage('Group Created Successfully !')
   }
 }

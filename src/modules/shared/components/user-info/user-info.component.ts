@@ -51,7 +51,7 @@ export class UserInfoComponent {
   if (this.profilePic.isImage) {
     const reader = new FileReader();
     reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
-    reader.onload = (_event) => {
+    reader.onload = () => {
       this.profilePicUrl = reader.result;
     }
   }

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class LoaderService {
-  
-  private spinner=new BehaviorSubject<any>({loading:false})
+
+  private spinner=new BehaviorSubject<object>({loading:false})
   private loading= this.spinner.asObservable();
   getLoadingStatus(){
     return this.loading
