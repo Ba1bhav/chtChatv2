@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
-import { urls } from 'src/commons/constants';
+import { fileFormats, urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
@@ -12,17 +12,17 @@ import { ToastrService } from 'src/services/shared/toastr.service';
   templateUrl: './chat-room-info.component.html',
   styleUrls: ['./chat-room-info.component.scss']
 })
-export class ChatRoomInfoComponent implements OnChanges{
-  @Input() chatRoomInfo:any;
-  @Input() chatId:any;
+export class ChatRoomInfoComponent implements OnChanges {
+  @Input() chatRoomInfo: any;
+  @Input() chatId: any;
   dataBase: any;
   searchInputDebounce: any;
   searchResult: any;
   senderId: any;
   chatMembersIds: any = [];
-  fetchedChatMembersIds:any=[];
-  newChatMembersIds:any=[];
-  removedMembersIds:any=[];
+  fetchedChatMembersIds: any = [];
+  newChatMembersIds: any = [];
+  removedMembersIds: any = [];
   url = urls;
   groupChatForm!: FormGroup;
   dataBaseReffrence: any;
@@ -31,12 +31,11 @@ export class ChatRoomInfoComponent implements OnChanges{
   groupProfilePic: any;
   groupProfileLocalUrl: any;
   groupProfileStorageUrl: any;
-  errorToggle= false;
-  imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'webp']
-  imageErrorToggle= false;
-  hasImage= false;
-  uploadProgress=100;
-  constructor(private toastr:ToastrService,private fireBaseService: FirebaseService, private httpRequests: HttpRequestsService) {
+  errorToggle = false;
+  imageErrorToggle = false;
+  hasImage = false;
+  uploadProgress = 100;
+  constructor(private toastr: ToastrService, private fireBaseService: FirebaseService, private httpRequests: HttpRequestsService) {
     this.senderId = localStorage.getItem('uid') ?? ''
     this.dataBase = fireBaseService.getDb();
     this.dataBaseReffrence = doc(this.dataBase, 'chats', this.senderId);
@@ -45,14 +44,14 @@ export class ChatRoomInfoComponent implements OnChanges{
       moto: new FormControl(),
     })
   }
-  ngOnChanges(){
-    if(this.chatRoomInfo){
-    this.groupProfileLocalUrl=this.chatRoomInfo[2]?.profile;
-    this.chatMembersIds=this.chatRoomInfo[0]?.members;
-    this.fetchedChatMembersIds=this.chatRoomInfo[0]?.members;
-    this.groupChatForm.patchValue(this.chatRoomInfo[1])
-    this.chatsReff = doc(this.dataBase, "chats",this.chatId);
-  }
+  ngOnChanges() {
+    if (this.chatRoomInfo) {
+      this.groupProfileLocalUrl = this.chatRoomInfo[2]?.profile;
+      this.chatMembersIds = this.chatRoomInfo[0]?.members;
+      this.fetchedChatMembersIds = this.chatRoomInfo[0]?.members;
+      this.groupChatForm.patchValue(this.chatRoomInfo[1])
+      this.chatsReff = doc(this.dataBase, "chats", this.chatId);
+    }
   }
 
   searchUser(inputEvent: any) {
@@ -87,33 +86,34 @@ export class ChatRoomInfoComponent implements OnChanges{
   }
   createGroup() {
     //Removed Members
-    const removalList=this.fetchedChatMembersIds.filter((id:any)=>this.removedMembersIds===id);
-    removalList.forEach((member:any)=>{
-      const deleteDocRef=doc(this.dataBase, 'usersChatlists', member, 'chats',this.chatId);
-      deleteDoc(deleteDocRef).then(()=>console.log('Member with id ',member,' has been removed !'))
+    const removalList = this.fetchedChatMembersIds.filter((id: any) => this.removedMembersIds === id);
+    removalList.forEach((member: any) => {
+      const deleteDocRef = doc(this.dataBase, 'usersChatlists', member, 'chats', this.chatId);
+      deleteDoc(deleteDocRef).then(() => console.log('Member with id ', member, ' has been removed !'))
     })
     //removal ends
-      console.log('updating  Group');
-      updateDoc(this.chatsReff,{info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileLocalUrl}]}).then((response: any) => {
-      console.log('Update Done !');
-      const newMembers=this.chatMembersIds.filter((member:any)=>!(removalList.includes(member)));
+    updateDoc(this.chatsReff, { info: [{ members: this.chatMembersIds }, this.groupChatForm.value, { profile: this.groupProfileLocalUrl }] })
+    .then(() => {
+      const newMembers = this.chatMembersIds.filter((member: any) => !(removalList.includes(member)));
       const groupData = this.groupChatForm.value;
       groupData.reciever = this.chatId;
       groupData.id = this.chatId;
       groupData.profile = this.groupProfileLocalUrl ?? '';
       newMembers.forEach((member: any) => {
         const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
-        setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Updated Successfully ', member)).catch(() => console.log('Error'))
+        setDoc(doc(reciever, this.chatId), groupData).then(() => {
+          // console.log(response || 'Member Updated Successfully ', member)
+        }).catch(() => console.log('Error'))
       })
     })
   }
   profilePicHandler(fileinputEvent: any) {
     this.groupProfilePic = fileinputEvent?.srcElement?.files[0];
-    this.groupProfilePic.isImage = this.imageExtensions.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
+    this.groupProfilePic.isImage = fileFormats?.image.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
     if (this.groupProfilePic.isImage) {
       const reader = new FileReader();
       reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
-      reader.onload = (_event) => {
+      reader.onload = () => {
         this.groupProfileLocalUrl = reader.result;
         this.hasImage = true;
       }
@@ -127,51 +127,46 @@ export class ChatRoomInfoComponent implements OnChanges{
   }
 
   uploadPicCreateGroup() {
-      const imageId=this.chatId;
-      const app = this.fireBaseService.app()
-      const storage = getStorage(app)
-      const imageref = ref(storage, '/' + imageId)
-      const uploadTask = uploadBytesResumable(imageref, this.groupProfilePic);
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          this.uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        },
-        (error) => {
-          // console.log(error)
-        }
-        ,
-        () => {
-          this.httpRequests.getDownloadLink(imageId).subscribe((response: any) => {
-            const downloadUrl = urls.storage + imageId + '?alt=media&token=' + response?.downloadTokens;
-            this.groupProfilePic = null;
-            this.groupProfileStorageUrl = downloadUrl;
-            //Removed Members
-            const removalList=this.fetchedChatMembersIds.filter((id:any)=>this.removedMembersIds===id);
-            removalList.forEach((member:any)=>{
-              const deleteDocRef=doc(this.dataBase, 'usersChatlists', member, 'chats',this.chatId);
-              deleteDoc(deleteDocRef).then(()=>console.log('Member with id ',member,' has been removed !'))
+    const imageId = this.chatId;
+    const app = this.fireBaseService.app()
+    const storage = getStorage(app)
+    const imageref = ref(storage, '/' + imageId)
+    const uploadTask = uploadBytesResumable(imageref, this.groupProfilePic);
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        this.uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      },
+      ()=>null
+      ,
+      () => {
+        this.httpRequests.getDownloadLink(imageId).subscribe((response: any) => {
+          const downloadUrl = urls.storage + imageId + '?alt=media&token=' + response?.downloadTokens;
+          this.groupProfilePic = null;
+          this.groupProfileStorageUrl = downloadUrl;
+          //Removed Members
+          const removalList = this.fetchedChatMembersIds.filter((id: any) => this.removedMembersIds === id);
+          removalList.forEach((member: any) => {
+            const deleteDocRef = doc(this.dataBase, 'usersChatlists', member, 'chats', this.chatId);
+            deleteDoc(deleteDocRef).then(() => console.log('Member with id ', member, ' has been removed !'))
+          })
+          //removal ends
+          // console.log('updating  Group');
+          updateDoc(this.chatsReff, { info: [{ members: this.chatMembersIds }, this.groupChatForm.value, { profile: this.groupProfileStorageUrl ?? '' }] })
+          .then(() => {
+            // console.log('Update Done !');
+            this.toastr.setToastMessage('Updated Successfully !')
+            const newMembers = this.chatMembersIds.filter((member: any) => !(removalList.includes(member)));
+            const groupData = this.groupChatForm.value;
+            groupData.reciever = this.chatId;
+            groupData.id = this.chatId;
+            groupData.profile = this.groupProfileStorageUrl ?? '';
+            newMembers.forEach((member: any) => {
+              const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
+              setDoc(doc(reciever, this.chatId), groupData)
             })
-            //removal ends
-              // console.log('updating  Group');
-              updateDoc(this.chatsReff,{info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileStorageUrl ?? ''}]}).then((response: any) => {
-              // console.log('Update Done !');
-                this.toastr.setToastMessage('Updated Successfully !')
-              const newMembers=this.chatMembersIds.filter((member:any)=>!(removalList.includes(member)));
-              const groupData = this.groupChatForm.value;
-              groupData.reciever = this.chatId;
-              groupData.id = this.chatId;
-              groupData.profile = this.groupProfileStorageUrl ?? '';
-              newMembers.forEach((member: any) => {
-                const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
-                setDoc(doc(reciever, this.chatId), groupData).then((response: any) => {
-                  // console.log(response || 'Member Updated Successfully ', member)
-                }).catch(() => {
-                  // console.log('Error')
-                })
-              })
-            })
-           })
+          })
         })
+      })
 
   }
   errorToggler() {

@@ -6,11 +6,11 @@ import { HttpErrorPageComponent } from 'src/modules/shared/components/http-error
 import { AuthenticationGuard } from 'src/services/shared/authentication.guard';
 
 const routes: Routes = [
-  {path:'login',component:SignInComponent},
-  {path:'dashboard',component:SearchUserComponent,canActivate:[AuthenticationGuard]},
-  {path:'404',component:HttpErrorPageComponent},
-  {path:'',redirectTo:'dashboard',pathMatch:'full'},
-  {path:'**',redirectTo:'404'}
+  { path: 'login', component: SignInComponent },
+  { path: 'dashboard', component: SearchUserComponent, canActivate: [AuthenticationGuard] },
+  { path: '404', component: HttpErrorPageComponent },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '404' }
 
 ];
 

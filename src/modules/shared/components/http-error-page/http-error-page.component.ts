@@ -7,12 +7,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./http-error-page.component.scss']
 })
 export class HttpErrorPageComponent {
-time=5;
-constructor(private router:Router){
-  const x=setInterval(()=>this.time--,1000)
-  setTimeout(()=>{
-    clearInterval(x)
-router.navigate(['dashboard'])
-  },5000)
-}
+  time = 5;
+  constructor(private router: Router) {
+    const x = setInterval(() => this.time--, 1000)
+    setTimeout(() => {
+      clearInterval(x)
+      router.navigate(['dashboard'])
+    }, 5000)
+  }
 }

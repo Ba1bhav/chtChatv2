@@ -4,8 +4,8 @@ import { ChatRoomInfoComponent } from './components/chat-room-info/chat-room-inf
 import { ChatComponent } from './components/chat/chat.component';
 import { SearchUserComponent } from './components/search-user/search-user.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatIconModule} from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { CreateGroupChatComponent } from './components/create-group-chat/create-group-chat.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { HttpErrorPageComponent } from './components/http-error-page/http-error-page.component';

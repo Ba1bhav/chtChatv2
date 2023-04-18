@@ -1,6 +1,6 @@
-import { Component} from '@angular/core';
-import { addDoc, collection, doc, getDocs, query, setDoc,  where } from 'firebase/firestore';
-import { urls } from 'src/commons/constants';
+import { Component } from '@angular/core';
+import { addDoc, collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { fileFormats, urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
@@ -29,17 +29,16 @@ export class CreateGroupChatComponent {
   groupProfilePic: any;
   groupProfileLocalUrl: any;
   groupProfileStorageUrl: any;
-  errorToggle= false;
-  imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'webp']
-  imageErrorToggle= false;
-  hasImage= false;
-  uploadProgress=100;
+  errorToggle = false;
+  imageErrorToggle = false;
+  hasImage = false;
+  uploadProgress = 100;
   constructor(
-    private router:Router,
+    private router: Router,
     private fireBaseService: FirebaseService,
     private httpRequests: HttpRequestsService,
-    private toastr:ToastrService,
-     ) {
+    private toastr: ToastrService,
+  ) {
     this.senderId = localStorage.getItem('uid') ?? ''
     this.dataBase = fireBaseService.getDb();
     this.dataBaseReffrence = doc(this.dataBase, 'chats', this.senderId);
@@ -86,21 +85,20 @@ export class CreateGroupChatComponent {
     this.chatMembersIds.push(this.senderId)
 
     // console.log('creating new Group');
-    addDoc(this.chatsReff, { info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:this.groupProfileStorageUrl ?? ''}],messages: [] }).then((response: any) => {
+    addDoc(this.chatsReff, { info: [{ members: this.chatMembersIds }, this.groupChatForm.value, { profile: this.groupProfileStorageUrl ?? '' }], messages: [] }).then((response: any) => {
       console.log(response?.id);
       this.chatId = response.id
       const groupData = this.groupChatForm.value;
       groupData.reciever = this.chatId;
       groupData.id = this.chatId;
       groupData.profile = this.groupProfileStorageUrl ?? '';
-      const chatMembersIds=this.chatMembersIds
-      chatMembersIds.forEach((member: any,index:number,array:any) => {
+      const chatMembersIds = this.chatMembersIds
+      chatMembersIds.forEach((member: any, index: number, array: any) => {
         const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
         setDoc(doc(reciever, this.chatId), groupData).then(() => {
           // console.log(response || 'Member Added Successfully ', member)
-          if(index===array.length-1)
-          {
-            setTimeout(()=>this.resetData())
+          if (index === array.length - 1) {
+            setTimeout(() => this.resetData())
           }
         }).catch(() => console.log('Error'))
 
@@ -110,7 +108,7 @@ export class CreateGroupChatComponent {
   }
   profilePicHandler(fileinputEvent: any) {
     this.groupProfilePic = fileinputEvent?.srcElement?.files[0];
-    this.groupProfilePic.isImage = this.imageExtensions.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
+    this.groupProfilePic.isImage = fileFormats?.image?.includes(this.groupProfilePic.type.split('/')[1].toLowerCase());
     if (this.groupProfilePic.isImage) {
       const reader = new FileReader();
       reader.readAsDataURL(fileinputEvent?.srcElement?.files[0]);
@@ -130,7 +128,7 @@ export class CreateGroupChatComponent {
   uploadPicCreateGroup() {
     this.chatMembersIds.push(this.senderId)
     // console.log('creating new Group with profile pic');
-    addDoc(this.chatsReff,{ info:[{members:this.chatMembersIds},this.groupChatForm.value,{profile:''}],messages: [] }).then((response: any) => {
+    addDoc(this.chatsReff, { info: [{ members: this.chatMembersIds }, this.groupChatForm.value, { profile: '' }], messages: [] }).then((response: any) => {
       // console.log(response?.id);
       this.chatId = response.id
       const imageId = response.id;
@@ -140,7 +138,7 @@ export class CreateGroupChatComponent {
       const uploadTask = uploadBytesResumable(imageref, this.groupProfilePic);
       uploadTask.on('state_changed',
         (snapshot) => {
-          this.uploadProgress= (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          this.uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           // console.log('Upload is ' + progress + '% done');
         },
         (error) => {
@@ -156,12 +154,11 @@ export class CreateGroupChatComponent {
             groupData.reciever = this.chatId;
             groupData.id = this.chatId;
             groupData.profile = this.groupProfileStorageUrl ?? '';
-            this.chatMembersIds.forEach((member: any,index:number,array:any) => {
+            this.chatMembersIds.forEach((member: any, index: number, array: any) => {
               const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
               setDoc(doc(reciever, this.chatId), groupData).then((response: any) => console.log(response || 'Member Added Successfully ', member)).catch(() => console.log('Error'))
-              if(index===array.length-1)
-              {
-                setTimeout(()=>this.resetData())
+              if (index === array.length - 1) {
+                setTimeout(() => this.resetData())
               }
             })
           })
@@ -179,12 +176,12 @@ export class CreateGroupChatComponent {
   imageAlternate(imageEvent: any) {
     imageEvent.target.src = urls.defaultProfile;
   }
-  resetData(){
-    this.chatMembers=[];
+  resetData() {
+    this.chatMembers = [];
     this.groupChatForm.reset();
-    this.chatMembersIds=[];
-    this.groupProfilePic='';
-    this.groupProfileLocalUrl='';
+    this.chatMembersIds = [];
+    this.groupProfilePic = '';
+    this.groupProfileLocalUrl = '';
     this.toastr.setToastMessage('Group Created Successfully !')
   }
 }
