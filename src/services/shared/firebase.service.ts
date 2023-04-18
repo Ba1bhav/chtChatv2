@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { initializeApp } from 'firebase/app';
-import{getFirestore} from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
-  firebaseConfig={
+  firebaseConfig = {
     apiKey: "AIzaSyD9Du2K1GUtGhD-MnODhxNxiDgZVP_OxjI",
     authDomain: "chitchatv2-f816e.firebaseapp.com",
     databaseURL: "https://chitchatv2-f816e-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -15,9 +15,9 @@ export class FirebaseService {
     appId: "1:1093034790456:web:331d0a3060bc9bfef320cd",
     measurementId: "G-FTQV32SJFD"
   };
-   app=()=>initializeApp(this.firebaseConfig);
+  app = () => initializeApp(this.firebaseConfig);
 
-   getDb(){
+  getDb() {
     return getFirestore(initializeApp(this.firebaseConfig))
-   }
+  }
 }
