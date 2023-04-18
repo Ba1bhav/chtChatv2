@@ -220,7 +220,7 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
     return this.sharedProfiles[this.sharedProfilesIds.findIndex((value: any) => value == id)]
   }
   toggleEmojiPicker() {
-    console.log(this.showEmojiPicker);
+    //console.log(this.showEmojiPicker);
     this.showEmojiPicker = !this.showEmojiPicker;
   }
   addEmoji(emojiEvent: any, message: any) {
