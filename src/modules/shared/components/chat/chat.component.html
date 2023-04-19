@@ -52,7 +52,7 @@
         <app-chat-room-info [chatRoomInfo]="chatRoomInfo" [chatId]="chatId"></app-chat-room-info>
       </ng-container>
       <ng-container *ngSwitchCase="'0'">
-        <tbody style="height:650px;display: block;overflow: -moz-hidden-unscrollable;width: 100%; position: relative;">
+        <tbody (click)="!mouseOverEmojiPicker?showEmojiPicker=false:''" style="height:650px;display: block;overflow: -moz-hidden-unscrollable;width: 100%; position: relative;">
           <section class="msger" style="display: contents;overflow: scroll;width: 100%;">
             <ng-container>
               <ng-container *ngIf="chatId">
@@ -100,9 +100,9 @@
                       </div>
                     </div>
                   </ng-container>
-                  <ng-container *ngIf="showEmojiPicker">
+                  <ng-container *ngIf="showEmojiPicker" >
 
-                    <div
+                    <div (mouseover)="mouseOverEmojiPicker=true" (mouseleave)="mouseOverEmojiPicker=false"
                       style="background-color:transparent;position: absolute;bottom: 0;right:0; width:350px;height: 300px;overflow-y: scroll;">
                       <span style="color: brown;" type="button" (click)="toggleEmojiPicker()">X close</span>
                       <emoji-mart class="emoji-mart" set="twitter" (emojiSelect)="addEmoji($event,message)"

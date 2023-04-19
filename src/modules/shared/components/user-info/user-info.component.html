@@ -13,12 +13,15 @@
             <div class='form-center'>
               <div form-control-row form-center class="border">
                 <br>
-                <div class="chat-nav" style="text-align: center;">
-                  <img class="msg-img" style="height: 100px; border-radius: 70%;width: 100px;"
-                    [src]="profilePicUrl||userData?.profile" (error)="errorImageHandler($event)"
-                    (click)="profileUpdate.click()" [style.opacity]="uploadProgress/100">
-                  <input type="file" style="display: none;" #profileUpdate
-                    (change)="[getFile($event),profileForm.enable()]">
+                <div  class="form-center"  style="text-align: center;">
+                  <div style="position: relative;height: 100px; border-radius: 70%;width: 100px;overflow: hidden;" type="button">
+                    <img class="msg-img" style="height: 100px; border-radius: 70%;width: 100px;"
+                      [src]="profilePicUrl||userData?.profile" (error)="errorImageHandler($event)"
+                      (click)="profileUpdate.click()" [style.opacity]="uploadProgress/100">
+                      <span style="position: absolute;right: 0;left: 0;bottom:0;backdrop-filter:blur(5px);color: black;"><mat-icon>camera_enhance</mat-icon></span>
+                    <input type="file" style="display: none;" #profileUpdate
+                      (change)="[getFile($event),profileForm.enable()]">
+                  </div>
                 </div>
                 <br>
                 <div *ngIf="imageFormatErrorToggle" class="form-control-col form-center">

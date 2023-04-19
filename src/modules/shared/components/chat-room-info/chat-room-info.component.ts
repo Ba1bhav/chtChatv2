@@ -55,15 +55,15 @@ export class ChatRoomInfoComponent implements OnChanges {
   }
 
   searchUser(inputEvent: any) {
-    console.log(inputEvent?.value);
+    // console.log(inputEvent?.value);
     clearTimeout(this.searchInputDebounce)
     this.searchInputDebounce = setTimeout(() => {
-      console.log('Searching ... ');
+      // console.log('Searching ... ');
       this.searchQuery(Array.from(inputEvent.value))
     }, 1000)
   }
   searchQuery(searchArray: any) {
-    console.log('response');
+    // console.log('response');
     if (searchArray.length > 0) {
       const search = query(collection(this.dataBase, 'usersChatlists'), where('userName', 'array-contains-any', searchArray));
       this.searchResult = []
@@ -89,7 +89,7 @@ export class ChatRoomInfoComponent implements OnChanges {
     const removalList = this.fetchedChatMembersIds.filter((id: any) => this.removedMembersIds === id);
     removalList.forEach((member: any) => {
       const deleteDocRef = doc(this.dataBase, 'usersChatlists', member, 'chats', this.chatId);
-      deleteDoc(deleteDocRef).then(() => console.log('Member with id ', member, ' has been removed !'))
+      deleteDoc(deleteDocRef).then()
     })
     //removal ends
     updateDoc(this.chatsReff, { info: [{ members: this.chatMembersIds }, this.groupChatForm.value, { profile: this.groupProfileLocalUrl }] })

@@ -37,6 +37,7 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
   sharedProfiles: any = [];
   sharedProfilesIds: any = [];
   showEmojiPicker = false;
+  mouseOverEmojiPicker=false;
   constructor(private toastr: ToastrService, private httpRequests: HttpRequestsService, private fireBaseService: FirebaseService, private changeDetector: ChangeDetectorRef) {
     this.dataBase = fireBaseService.getDb();
 
@@ -159,12 +160,12 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
     this.unsubscribeListener()
   }
   leaveChat() {
-    const deleteDocRef = doc(this.dataBase, 'usersChatlists', this.senderId ?? '', 'chats', this.chatId);
-    if (this.chatRoomInfo) {
-      // console.log(this.chatRoomInfo[0]?.members.findIndex((value:any)=>value==this.senderId));
 
+    if (this.chatRoomInfo) {
+      const deleteDocRef = doc(this.dataBase, 'usersChatlists', this.senderId ?? '', 'chats', this.chatId);
+      // console.log(this.chatRoomInfo[0]?.members.findIndex((value:any)=>value==this.senderId));
       this.chatRoomInfo[0].members.splice(this.chatRoomInfo[0]?.members.findIndex((value: any) => value == this.senderId), 1);
-      console.log(this.chatRoomInfo, this.senderId);
+      // console.log(this.chatRoomInfo, this.senderId);
       setDoc(doc(this.dataBase, "chats", this.chatId), { info: this.chatRoomInfo }).then(() => {
         this.toastr.setToastMessage('Chat Room Left ')
         deleteDoc(deleteDocRef).then(() => {
@@ -176,7 +177,8 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
 
     }
     else {
-      deleteDoc(deleteDocRef).then(() => console.log('chat with id ', this.chatId, ' has been removed !'))
+      const deleteDocRef = doc(this.dataBase, 'usersChatlists', this.senderId ?? '', 'chats', this.recieverId);
+      deleteDoc(deleteDocRef).then(()=>this.toastr.setToastMessage('Chat Room Left '))
       this.chatId = null;
     }
 
