@@ -16,6 +16,7 @@ import { routes } from 'src/commons/constants';
 })
 export class SignInComponent implements OnInit {
   isHuman = false;
+  isCaptchaVerified=false;
   otpInputToggle = false;
   windowRef: any;
   App: any;
@@ -106,6 +107,10 @@ export class SignInComponent implements OnInit {
           this.loginForm.get('phone')?.enable()
         });
 
+    }
+    else{
+      this.isCaptchaVerified=true;
+      setTimeout(() => this.isCaptchaVerified = false, 2000)
     }
   }
 

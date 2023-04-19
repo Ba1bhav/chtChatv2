@@ -1,7 +1,3 @@
-<ng-container *ngIf="!chatId">
-  <app-user-info></app-user-info>
-</ng-container>
-
 <ng-container *ngIf="chatId">
   <table style="width: 100%;height: 100%; overflow: hidden;">
     <thead style="width: 100%;background-color: rgb(243,243,243);">
@@ -38,10 +34,6 @@
             <button mat-menu-item style="width: 150px;" (click)="leaveChat()">
               <mat-icon>exit_to_app</mat-icon>
               <span>leave chat</span>
-            </button>
-            <button mat-menu-item style="width: 150px;" (click)="closeChat()">
-              <mat-icon>clear</mat-icon>
-              <span>close</span>
             </button>
           </mat-menu>
         </div>

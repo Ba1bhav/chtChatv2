@@ -24,9 +24,12 @@
             </div>
             <br>
             <div class="center">
-              <input type="file" style="display: none;" #groupProfile (change)="profilePicHandler($event)">
-              <img style="height: 65px; border-radius: 70%;width: 65px;" [style.opacity]="uploadProgress/100"
-                [src]="groupProfileLocalUrl" (error)="imageAlternate($event)" (click)="groupProfile.click()">
+              <div class="profileDivContainer" type="button">
+                <input type="file" style="display: none;" #groupProfile (change)="profilePicHandler($event)">
+                <img class="profileDivContainer-imgTag" [style.opacity]="uploadProgress/100"
+                  [src]="groupProfileLocalUrl" (error)="imageAlternate($event)" (click)="groupProfile.click()">
+                <span class="profileDivContainer-camIcon"><mat-icon>camera_enhance</mat-icon></span>
+            </div>
             </div>
             <br>
             <div class="center">

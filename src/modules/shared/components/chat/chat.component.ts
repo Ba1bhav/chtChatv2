@@ -155,10 +155,6 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
   deleteMessage(index: any) {
     this.messages.splice(index, 1)
   }
-  closeChat() {
-    this.chatId = null;
-    this.unsubscribeListener()
-  }
   leaveChat() {
 
     if (this.chatRoomInfo) {

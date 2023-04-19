@@ -1,59 +1,65 @@
-<table style="width:100%;height: 100%;">
-  <thead style="height: 15%;">
+<table class="mainTable">
+  <thead style="height: 15%">
     <div>
       <h1>ChitChat-v2</h1>
-      <h3>Welcome {{userData?.name||'Anonymous'}}</h3>
+      <h3>Welcome {{ userData?.name || "Anonymous" }}</h3>
     </div>
   </thead>
   <tbody>
     <tr>
-      <td>
-        <div style="display: block;height:100%;width: 100%;">
-          <form *ngIf="profileForm" [formGroup]="profileForm" (submit)="profileUpdates()">
-            <div class='form-center'>
+      <td style="width: fit-content;height: fit-content;">
+        <div style="display: block; height: 100%; width: 100%">
+          <form *ngIf="profileForm" [formGroup]="profileForm" (submit)="profileUpdates()" >
+            <div class="form-center" >
               <div form-control-row form-center class="border">
-                <br>
-                <div  class="form-center"  style="text-align: center;">
-                  <div style="position: relative;height: 100px; border-radius: 70%;width: 100px;overflow: hidden;" type="button">
-                    <img class="msg-img" style="height: 100px; border-radius: 70%;width: 100px;"
-                      [src]="profilePicUrl||userData?.profile" (error)="errorImageHandler($event)"
-                      (click)="profileUpdate.click()" [style.opacity]="uploadProgress/100">
-                      <span style="position: absolute;right: 0;left: 0;bottom:0;backdrop-filter:blur(5px);color: black;"><mat-icon>camera_enhance</mat-icon></span>
-                    <input type="file" style="display: none;" #profileUpdate
-                      (change)="[getFile($event),profileForm.enable()]">
+                <br />
+                <div class="form-center" style="text-align: center">
+                  <div class="profileDivContainer" type="button">
+                    <img class="profileDivContainer-imgTag"
+                      [src]="profilePicUrl || userData?.profile" (error)="errorImageHandler($event)"
+                      (click)="profileUpdate.click()" [style.opacity]="uploadProgress / 100" />
+                    <span class="profileDivContainer-camIcon"><mat-icon>camera_enhance</mat-icon></span>
+                    <input type="file" style="display: none" #profileUpdate
+                      (change)="[getFile($event), profileForm.enable()]" />
                   </div>
                 </div>
-                <br>
+                <br />
                 <div *ngIf="imageFormatErrorToggle" class="form-control-col form-center">
-                  <div style="color: brown;text-align: center;"> Wrong Image Format ! {{profileForm.disable()}}</div>
+                  <div style="color: brown; text-align: center">
+                    Wrong Image Format ! {{ profileForm.disable() }}
+                  </div>
                 </div>
-                <br>
+                <br />
                 <div class="form-control-col form-center">
-                  <input type="text" disabled placeholder="Name" style="width:100px; text-align: center;">
-                  <input type="text" formControlName="name" class="field">
+                  <input type="text" disabled placeholder="Name" style="width: 100px; text-align: center" />
+                  <input type="text" formControlName="name" class="field" />
                 </div>
-                <br>
+                <br />
                 <div class="form-control-col form-center">
-                  <input type="text" disabled placeholder="ID" style="width:100px; text-align: center;">
-                  <input type="text" formControlName="id" class="field">
+                  <input type="text" disabled placeholder="ID" style="width: 100px; text-align: center" />
+                  <input type="text" formControlName="id" class="field" />
                 </div>
-                <br>
-                <div style="text-align: center;">
-                  <div style="padding: 10%;">
-                    <button *ngIf="profileForm.enabled" class="btn btn-secondary" style="float: left;"
-                      type="submit">Update</button>
-                    <button *ngIf="profileForm.enabled" class="btn btn-info" style="float: right;" type="button"
-                      (click)="[profileForm.disable(),setProfileForm()]">Reset</button>
+                <br />
+                <div style="text-align: center">
+                  <div style="padding: 10%">
+                    <button *ngIf="profileForm.enabled" class="btn btn-secondary" style="float: left" type="submit">
+                      Update
+                    </button>
+                    <button *ngIf="profileForm.enabled" class="btn btn-info" style="float: right" type="button"
+                      (click)="[profileForm.disable(), setProfileForm()]">
+                      Reset
+                    </button>
                   </div>
                   <button *ngIf="profileForm.disabled" class="btn btn-secondary" (click)="[profileForm.enable()]"
-                    type="button">Edit Profile</button>
+                    type="button">
+                    Edit Profile
+                  </button>
                 </div>
-                <br>
+                <br />
               </div>
             </div>
           </form>
         </div>
-
       </td>
     </tr>
   </tbody>

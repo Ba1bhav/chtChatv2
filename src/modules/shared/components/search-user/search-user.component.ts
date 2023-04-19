@@ -29,7 +29,7 @@ export class SearchUserComponent implements OnInit, AfterContentInit, AfterConte
   chatName: any;
   chatProfile: any;
   senderId = localStorage.getItem('uid') ?? '';
-  switchReponse: any = '0';
+  switchReponse: any = '3';
   chatlistListener: any;
   recieverId: any;
   isAnonymous: boolean = localStorage.getItem('uid')?.startsWith('0x') ? true : false;
@@ -120,6 +120,7 @@ export class SearchUserComponent implements OnInit, AfterContentInit, AfterConte
   }
 
   createChat(uid: any) {
+    this.switchReponse='0'
     this.userschatReff = collection(this.dataBase, 'usersChatlists', this.senderId, 'chats');
     const idArray: any = []
     const messagIdArray: any = []

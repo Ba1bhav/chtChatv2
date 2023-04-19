@@ -21,3 +21,24 @@
   border-width: thin;
   overflow: hidden;
 }
+.profileDivContainer{
+  position: relative;
+  height: 100px;
+  border-radius: 70%;
+  width: 100px;
+  overflow: hidden;
+}
+.profileDivContainer-camIcon{
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  text-align: center;
+  backdrop-filter: blur(50px);
+  color: black;
+}
+.profileDivContainer-imgTag{
+  height: 100px;
+  border-radius: 70%;
+  width: 100px
+}
