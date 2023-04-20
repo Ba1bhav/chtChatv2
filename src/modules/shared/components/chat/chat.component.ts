@@ -22,6 +22,7 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
   attachmentFileUrl: any;
   attachmentUploadProgress = 0;
   seenMessages!: number;
+  alreadyUploadingAttachMent=false;
   @Input() chatId: any;
   @Input() chatName: any;
   @Input() chatProfile: any;
@@ -114,12 +115,14 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
   }
 
   attchmentUpload() {
+
     const app = this.fireBaseService.app()
     const storage = getStorage(app)
     const imageref = ref(storage, '/' + this.attachmentFile?.name)
     const uploadTask = uploadBytesResumable(imageref, this.attachmentFile);
     uploadTask.on('state_changed',
       (snapshot) => {
+        this.alreadyUploadingAttachMent=true;
         this.attachmentUploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         // console.log('Upload is ' + this.attachmentUploadProgress + '% done');
       },
@@ -132,7 +135,8 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
 
         this.httpRequests.getDownloadLink(this.attachmentFile?.name).subscribe((response: any) => {
           const downloadUrl = urls.storage + encodeURI(this.attachmentFile?.name) + '?alt=media&token=' + response?.downloadTokens;
-          console.log('Getting Url', downloadUrl);
+          // console.log('Getting Url', downloadUrl);
+          this.alreadyUploadingAttachMent=false;
           if (this.attachmentFile.isImage) {
             this.sendMessage(downloadUrl, 1);
             this.attachmentFile = null;

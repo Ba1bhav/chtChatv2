@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -8,13 +8,16 @@ import { WindowService } from 'src/services/shared/window.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'src/services/shared/toastr.service';
 import { LoaderService } from 'src/services/shared/loader.service';
-import { routes } from 'src/commons/constants';
+import { countryCode, routes } from 'src/commons/constants';
+
+
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss']
 })
 export class SignInComponent implements OnInit {
+  // private router=inject(Router);
   isHuman = false;
   isCaptchaVerified=false;
   otpInputToggle = false;
@@ -46,7 +49,7 @@ export class SignInComponent implements OnInit {
     private window: WindowService,
     private firbaseService: FirebaseService) {
     if (localStorage.getItem('uid')) {
-      router.navigate([routes.dashboard])
+     router.navigate([routes.dashboard])
     }
     this.windowRef = window.windowRef;
     this.etherium = this.windowRef.ethereum
@@ -95,7 +98,7 @@ export class SignInComponent implements OnInit {
   sendOtp() {
     const appVerifier = this.windowRef.recaptchaVerifier;
     if (this.isHuman) {
-      signInWithPhoneNumber(this.auth, '+91' + this.loginForm.value?.phone, appVerifier).then((result: any) => {
+      signInWithPhoneNumber(this.auth, countryCode.India+ this.loginForm.value?.phone, appVerifier).then((result: any) => {
         this.otpInputToggle = true;
         // console.log(result)
         this.toastr.setToastMessage('OTP Sent Successfully !')

@@ -17,3 +17,6 @@ export const routes={
   dashboard:'dashboard',
   login:'login'
 }
+export const countryCode={
+  India:'+91' ,
+}

@@ -142,7 +142,7 @@
         <tfoot style="height: min-content;">
           <ng-container>
             <div class="msger-inputarea">
-              <form (submit)="attachmentFile?attchmentUpload():sendMessage(message,0)"
+              <form (submit)="(attachmentFile)&&!(alreadyUploadingAttachMent)?attchmentUpload():sendMessage(message,0)"
                 style="display: flex;width:100%;">
                 <input type="file" style="display: none;outline: none; color: transparent;border: none;" #fileUpload
                   matTooltip="Info about the action" matTooltipPosition="top" (change)="fileAttach($event)">
@@ -152,9 +152,9 @@
                 </button>
                 <input type="text" #message class="msger-input" placeholder="Enter your message...">
                 <button type="button" (click)="toggleEmojiPicker()" style="padding: 5px;"> 😀</button>
-                <button *ngIf="!attachmentFile" type="button" class="msger-send-btn"
+                <button *ngIf="!attachmentFile||alreadyUploadingAttachMent" type="button" class="msger-send-btn"
                   (click)="sendMessage(message,0)">Send</button>
-                <button *ngIf="attachmentFile" type="button" class="msger-send-btn"
+                <button *ngIf="attachmentFile&&!alreadyUploadingAttachMent" type="button" class="msger-send-btn"
                   (click)="attchmentUpload()">Send</button>
               </form>
             </div>
