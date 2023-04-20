@@ -108,7 +108,8 @@ export class SignInComponent implements OnInit {
       })
         .catch(() => {
           this.loginForm.get('phone')?.enable()
-          this.toastr.setToastError('Wrong Phone Number')
+          this.toastr.setToastError('Something went wrong !')
+
         });
 
     }
@@ -126,7 +127,9 @@ export class SignInComponent implements OnInit {
       localStorage.setItem('idToken', result?._tokenResponse?.idToken);
       this.createUidDoc(result?.user?.uid)
     }).catch(() => {
-      this.toastr.setToastMessage('Wrong Otp');
+      this.toastr.setToastError('Wrong Otp');
+      this.loader.setLoadingStatus(false);
+      this.ngOnInit()
       this.loginForm.get('phone')?.enable()
     });
   }
