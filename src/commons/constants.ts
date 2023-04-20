@@ -20,3 +20,6 @@ export const routes={
 export const countryCode={
   India:'+91' ,
 }
+export const regex={
+  phoneNo:`^[6-9]\\d*`,
+}

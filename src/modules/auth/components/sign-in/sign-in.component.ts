@@ -8,7 +8,7 @@ import { WindowService } from 'src/services/shared/window.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'src/services/shared/toastr.service';
 import { LoaderService } from 'src/services/shared/loader.service';
-import { countryCode, routes } from 'src/commons/constants';
+import { countryCode, regex, routes } from 'src/commons/constants';
 
 
 @Component({
@@ -93,7 +93,7 @@ export class SignInComponent implements OnInit {
     setTimeout(() => this.errorToggle = false, 2000)
   }
   numberCheck(value: any) {
-    value.value = value.value.match(`^[6-9]\\d*`)
+    value.value = value.value.match(regex?.phoneNo)
   }
   sendOtp() {
     const appVerifier = this.windowRef.recaptchaVerifier;
