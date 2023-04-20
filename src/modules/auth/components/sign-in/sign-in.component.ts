@@ -122,6 +122,7 @@ export class SignInComponent implements OnInit {
       localStorage.setItem('idToken', result?._tokenResponse?.idToken);
       this.createUidDoc(result?.user?.uid)
     }).catch(() => {
+      this.toastr.setToastMessage('Wrong Otp');
       this.loginForm.get('phone')?.enable()
     });
   }

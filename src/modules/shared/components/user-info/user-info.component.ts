@@ -104,6 +104,7 @@ export class UserInfoComponent {
         this.httpRequests.getDownloadLink(this.userData.uid).subscribe((response: any) => {
           const downloadUrl = urls.storage + String(this.userData.uid).replace('+', '%2B') + '?alt=media&token=' + response?.downloadTokens;
           this.profileForm.value.profile = downloadUrl;
+          this.profileUpdates()
 
         })
       })

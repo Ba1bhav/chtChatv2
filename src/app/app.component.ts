@@ -18,8 +18,8 @@ export class AppComponent {
    Ybood  88  88 88   88    Ybood   88  88 dP""""Yb   88      YP    .d8888 `
   constructor(private router: Router, private toastr: ToastrService, private loader: LoaderService) {
     console.log(this.banner)
-    // console.log = () => null;
-    // console.error=()=>null;
+    console.log = () => null;
+    console.error=()=>null;
     console.warn = () => null;
     this.uidHandler = localStorage.getItem('uid');
     this.loader.getLoadingStatus().subscribe((response: any) => {

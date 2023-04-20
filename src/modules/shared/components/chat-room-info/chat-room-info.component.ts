@@ -188,4 +188,8 @@ export class ChatRoomInfoComponent implements OnChanges {
   imageAlternate(imageEvent: any) {
     imageEvent.target.src = urls.defaultProfile;
   }
+  noUpdates(){
+    this.toastr.setToastMessage('Nothing To Update');
+    this.closeOnSubmit.emit(true);
+  }
 }

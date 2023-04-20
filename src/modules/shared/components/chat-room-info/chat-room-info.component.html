@@ -123,11 +123,14 @@
             <div class="center" *ngIf="!searchResult && chatMembersIds.length<1">Please Add Some Members</div>
             <br>
             <div class="center">
-              <button *ngIf="(chatMembersIds.length>1)&& !groupChatForm.invalid && !hasImage" type="submit"
+              <button *ngIf="(chatMembersIds.length>1)&& !groupChatForm.invalid && !hasImage && groupChatForm.touched" type="submit"
                 (click)="createGroup()" class="btn btn-success field-label">Update</button>
-              <button *ngIf="(chatMembersIds.length>1)&& !groupChatForm.invalid && hasImage" type="submit"
+              <button *ngIf="(chatMembersIds.length>1)&& !groupChatForm.invalid && hasImage && groupChatForm.touched" type="submit"
                 (click)="uploadPicCreateGroup()" class="btn btn-success field-label">Update</button>
-              <button *ngIf="chatMembersIds.length<2  || groupChatForm.invalid" type="button" (click)="errorToggler()"
+              <button *ngIf="chatMembersIds.length<2  || groupChatForm.invalid||groupChatForm.touched" type="button" (click)="errorToggler()"
+                class="btn btn-success field-label">Update</button>
+                <button *ngIf="chatMembersIds.length<2  || groupChatForm.invalid||!groupChatForm.touched" type="button"
+                (click)="noUpdates()"
                 class="btn btn-success field-label">Update</button>
             </div>
             <br>
