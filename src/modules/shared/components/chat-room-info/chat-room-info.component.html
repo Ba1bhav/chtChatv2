@@ -9,9 +9,7 @@
     <tr>
       <div>
         <div class="center">
-          <br>
-          <form style="width:400px;background-color: aliceblue;" [formGroup]="groupChatForm">
-            <br>
+          <form style="width:400px;height: 600px;background-color: aliceblue;" [formGroup]="groupChatForm">
             <div class="center" style="color: brown;text-align: center;" *ngIf="errorToggle">
               Something is wrong in this Form !
             </div>
@@ -48,9 +46,11 @@
             <br>
             <div class="center">
               <div class="search-div">
-                <input type="text" placeholder="search " (input)="searchUser($event.target)"
+                <input type="text" placeholder="search " (input)="searchUser($event.target)" #searchBar
                   style="width: 95%;border: none;padding-left: 4%;outline: none;">
-                <div><mat-icon style="background-color: white;height: 100%;outline: none;">search</mat-icon></div>
+                <div *ngIf="searchBar.value.length<1" ><mat-icon style="background-color: white;height: 100%;outline: none;">search</mat-icon></div>
+                <div *ngIf="searchBar.value.length>0" (click)="[searchBar.value='',searchResult=[]]" type="button">
+                  <mat-icon style="color: brown;background-color: white;height: 100%;outline: none;">close</mat-icon></div>
               </div>
             </div>
             <br>

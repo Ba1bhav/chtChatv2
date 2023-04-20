@@ -244,4 +244,7 @@ export class ChatComponent implements OnChanges, AfterViewChecked, AfterViewInit
     })
 
   }
+  closeChatRoomInfo(childEvent:any){
+    this.switchResponse='0'
+  }
 }

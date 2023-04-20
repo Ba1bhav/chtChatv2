@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { fileFormats, urls } from 'src/commons/constants';
 import { FirebaseService } from 'src/services/shared/firebase.service';
@@ -15,6 +15,7 @@ import { ToastrService } from 'src/services/shared/toastr.service';
 export class ChatRoomInfoComponent implements OnChanges {
   @Input() chatRoomInfo: any;
   @Input() chatId: any;
+  @Output() closeOnSubmit=new EventEmitter();
   dataBase: any;
   searchInputDebounce: any;
   searchResult: any;
@@ -35,6 +36,7 @@ export class ChatRoomInfoComponent implements OnChanges {
   imageErrorToggle = false;
   hasImage = false;
   uploadProgress = 100;
+
   constructor(private toastr: ToastrService, private fireBaseService: FirebaseService, private httpRequests: HttpRequestsService) {
     this.senderId = localStorage.getItem('uid') ?? ''
     this.dataBase = fireBaseService.getDb();
@@ -99,11 +101,14 @@ export class ChatRoomInfoComponent implements OnChanges {
       groupData.reciever = this.chatId;
       groupData.id = this.chatId;
       groupData.profile = this.groupProfileLocalUrl ?? '';
-      newMembers.forEach((member: any) => {
+      newMembers.forEach((member: any,index:number,array:any) => {
         const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
         setDoc(doc(reciever, this.chatId), groupData).then(() => {
           // console.log(response || 'Member Updated Successfully ', member)
         }).catch(() => console.log('Error'))
+        if(index===array.length-1){
+          this.closeOnSubmit.emit(true);
+        }
       })
     })
   }
@@ -147,7 +152,7 @@ export class ChatRoomInfoComponent implements OnChanges {
           const removalList = this.fetchedChatMembersIds.filter((id: any) => this.removedMembersIds === id);
           removalList.forEach((member: any) => {
             const deleteDocRef = doc(this.dataBase, 'usersChatlists', member, 'chats', this.chatId);
-            deleteDoc(deleteDocRef).then(() => console.log('Member with id ', member, ' has been removed !'))
+            deleteDoc(deleteDocRef).then()
           })
           //removal ends
           // console.log('updating  Group');
@@ -160,9 +165,12 @@ export class ChatRoomInfoComponent implements OnChanges {
             groupData.reciever = this.chatId;
             groupData.id = this.chatId;
             groupData.profile = this.groupProfileStorageUrl ?? '';
-            newMembers.forEach((member: any) => {
+            newMembers.forEach((member: any,index:number,array:any) => {
               const reciever = collection(this.dataBase, 'usersChatlists', member, 'chats');
               setDoc(doc(reciever, this.chatId), groupData)
+              if(index===array.length-1){
+                this.closeOnSubmit.emit(true);
+              }
             })
           })
         })

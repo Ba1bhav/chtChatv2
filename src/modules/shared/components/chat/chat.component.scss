@@ -139,8 +139,8 @@ html {
 
 .msger-chat {
   height: 100%;
-  background-color: #fcfcfe;
-  background-image: url(../../../../assets/images/chatBackground.svg);
+  background-color: transparent;
+
 }
 
 .mat-menu-width {
@@ -183,4 +183,11 @@ html {
 .msg-text {
   overflow-x: hidden;
   height: auto;
+}
+.chat-tbody{
+  //  height:650px;
+   display: block;
+   width: 100%;
+   background-image: url(../../../../assets/images/chatBackground.svg);
+   position: relative;
 }
