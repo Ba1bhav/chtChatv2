@@ -93,7 +93,7 @@ export class SignInComponent implements OnInit {
     setTimeout(() => this.errorToggle = false, 2000)
   }
   numberCheck(value: any) {
-    value.value = value.value.match('[0-9]+')
+    value.value = value.value.match(`^[6-9]\\d*`)
   }
   sendOtp() {
     const appVerifier = this.windowRef.recaptchaVerifier;
@@ -108,6 +108,7 @@ export class SignInComponent implements OnInit {
       })
         .catch(() => {
           this.loginForm.get('phone')?.enable()
+          this.toastr.setToastError('Wrong Phone Number')
         });
 
     }

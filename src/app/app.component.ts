@@ -44,7 +44,7 @@ export class AppComponent {
         // console.log(response?.message);
 
         Toast.fire({
-          icon: 'success',
+          icon: response?.type?'success':'error',
           title: response?.message
         })
       }
