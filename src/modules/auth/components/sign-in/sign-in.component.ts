@@ -149,9 +149,10 @@ export class SignInComponent implements OnInit {
               this.etherium.request({ method: 'eth_requestAccounts' })
                 .then((accounts: any) => {
                   localStorage.setItem('uid', accounts[0])
-                  this.createUidDoc(accounts[0])
+
                   this.requests.getUser(true).subscribe(
                    ()=>null ,() => {
+                      this.createUidDoc(accounts[0])
                       this.requests.registerUser(true).subscribe()
                     })
                 })

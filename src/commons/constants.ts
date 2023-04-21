@@ -22,4 +22,5 @@ export const countryCode={
 }
 export const regex={
   phoneNo:`^[6-9]\\d*`,
+  name:`^[A-Z a-z]\\s*`,
 }
