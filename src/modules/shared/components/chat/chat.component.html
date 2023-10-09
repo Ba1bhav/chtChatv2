@@ -1,5 +1,5 @@
 <ng-container *ngIf="chatId">
-  <table style="width: 100%;height: 100%; overflow: hidden;" #table>
+  <table style="width: 100%;height: 100%; overflow: hidden;" #table >
     <thead style="width: 100%;background-color: rgb(243,243,243);">
       <header class="msger-header">
         <div class="msger-header-title" style="align-self: center;">
@@ -44,7 +44,7 @@
         <app-chat-room-info [chatRoomInfo]="chatRoomInfo" [chatId]="chatId"
           (closeOnSubmit)="closeChatRoomInfo($event)"></app-chat-room-info>
       </ng-container>
-      <ng-container *ngSwitchCase="'0'">
+      <ng-container *ngSwitchCase="'0'" >
         <tbody (click)="!mouseOverEmojiPicker?showEmojiPicker=false:''" class="chat-tbody" [style.height]="table.offsetHeight-130+'px'">
           <section class="msger" style="display: contents;overflow: scroll;width: 100%;">
             <ng-container>
@@ -100,7 +100,7 @@
 
                     <div (mouseover)="mouseOverEmojiPicker=true" (mouseleave)="mouseOverEmojiPicker=false"
                       style="background-color:transparent;position: absolute;bottom: 0;right:0; width:350px;height: 300px;overflow-y: scroll;">
-                      <span style="color: brown;" type="button" (click)="toggleEmojiPicker()">X close</span>
+                      <!-- <span style="color: brown;" type="button" (click)="toggleEmojiPicker()">X close</span> -->
                       <emoji-mart class="emoji-mart" set="twitter" (emojiSelect)="addEmoji($event,message)"
                         title="Pick your emoji…"></emoji-mart>
 

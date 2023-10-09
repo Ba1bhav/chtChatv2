@@ -93,7 +93,7 @@ export class SignInComponent implements OnInit {
     setTimeout(() => this.errorToggle = false, 2000)
   }
   numberCheck(value: any) {
-    value.value = value.value.match(regex?.phoneNo)
+    value.value = String(value.value.match(regex?.phoneNo)||'')?.substring(0,10);
   }
   sendOtp() {
     const appVerifier = this.windowRef.recaptchaVerifier;
